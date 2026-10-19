@@ -71,7 +71,7 @@ gukgu/
 
 Coding conventions (in Thai) live in [`docs/`](docs/README.md). Start with:
 
-- [Routes & CRUD naming](docs/02-routes-crud.md)
+- [Routes &amp; CRUD naming](docs/02-routes-crud.md)
 - [Access control (ACL)](docs/03-acl.md)
 - [Full feature scaffold](docs/09-feature-scaffold.md)
 

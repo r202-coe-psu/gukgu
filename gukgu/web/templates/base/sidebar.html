@@ -20,6 +20,7 @@
     <ul class="menu w-full gap-1 p-2">
       {{ menu_item('index.index', 'house', 'หน้าแรก') }}
       {{ menu_item('dashboard.index', 'chart-line', 'แดชบอร์ด', '/dashboard') }}
+      {{ menu_item('projects.index', 'flask', 'โปรเจกต์', '/projects') }}
       {% if current_user.is_admin() %}
       {{ menu_item('users.index', 'users', 'ผู้ใช้งาน', '/users') }}
       {% endif %}

@@ -1,0 +1,183 @@
+{% extends "base/default_page.html" %}
+
+{% set title_page = "โปรเจกต์ของห้องแล็ป" %}
+{% set description_page = "ติดตามความคืบหน้า สมาชิก และกำหนดส่งของโปรเจกต์วิจัยทั้งหมดในห้องแล็ป" %}
+
+{# MOCKUP: sample data only. Replace with real documents from the view once the Project model exists. #}
+{% set status_map = {
+  "planning":    {"label": "วางแผน",         "badge": "badge-info badge-soft"},
+  "in_progress": {"label": "กำลังดำเนินการ", "badge": "badge-primary badge-soft"},
+  "review":      {"label": "รอตรวจสอบ",      "badge": "badge-warning badge-soft"},
+  "completed":   {"label": "เสร็จสิ้น",       "badge": "badge-success badge-soft"},
+  "on_hold":     {"label": "พักไว้",          "badge": "badge-ghost"},
+} %}
+
+{% set avatar_colors = ["bg-primary text-primary-content", "bg-secondary text-secondary-content", "bg-accent text-accent-content", "bg-neutral text-neutral-content"] %}
+
+{% set projects = [
+  {"code": "LAB-2569-001", "name": "ระบบตรวจจับความผิดปกติของเครือข่ายด้วย Machine Learning", "area": "Cybersecurity", "advisor": "ผศ.ดร.สมชาย ใจดี", "members": ["ศก", "นว", "พธ", "อส", "กม"], "progress": 72, "status": "in_progress", "due": "30 พ.ย. 2569", "updated": "2 วันที่แล้ว"},
+  {"code": "LAB-2569-002", "name": "Chatbot ถาม-ตอบข้อมูลหลักสูตรด้วย LLM และ RAG", "area": "AI / LLM", "advisor": "รศ.ดร.วิภา รักเรียน", "members": ["ธน", "ปร", "สม"], "progress": 90, "status": "review", "due": "25 ต.ค. 2569", "updated": "วันนี้"},
+  {"code": "LAB-2569-003", "name": "ระบบเฝ้าระวังฟาร์มอัจฉริยะด้วย IoT และ LoRa", "area": "IoT", "advisor": "อ.ดร.ประเสริฐ มั่นคง", "members": ["วช", "ศิ"], "progress": 35, "status": "in_progress", "due": "15 ม.ค. 2570", "updated": "5 วันที่แล้ว"},
+  {"code": "LAB-2569-004", "name": "Honeypot สำหรับเก็บข้อมูลการโจมตี SSH และวิเคราะห์พฤติกรรม", "area": "Cybersecurity", "advisor": "ผศ.ดร.สมชาย ใจดี", "members": ["กต", "นพ", "รร", "ยศ"], "progress": 10, "status": "planning", "due": "28 ก.พ. 2570", "updated": "1 สัปดาห์ที่แล้ว"},
+  {"code": "LAB-2568-017", "name": "Thai OCR สำหรับเอกสารราชการเก่าแบบ handwritten", "area": "Computer Vision", "advisor": "รศ.ดร.วิภา รักเรียน", "members": ["ภค", "จร", "มน"], "progress": 100, "status": "completed", "due": "30 ก.ย. 2569", "updated": "3 สัปดาห์ที่แล้ว"},
+  {"code": "LAB-2568-012", "name": "แพลตฟอร์ม CI/CD และ monitoring สำหรับ server กลางของห้องแล็ป", "area": "DevOps", "advisor": "อ.ดร.ประเสริฐ มั่นคง", "members": ["สว", "อน"], "progress": 48, "status": "on_hold", "due": "—", "updated": "1 เดือนที่แล้ว"},
+] %}
+
+{% block content %}
+{# Summary #}
+<div class="stats stats-vertical md:stats-horizontal shadow bg-base-0 w-full mb-4">
+  <div class="stat">
+    <div class="stat-figure text-primary"><i class="ph ph-flask text-3xl"></i></div>
+    <div class="stat-title">โปรเจกต์ทั้งหมด</div>
+    <div class="stat-value">24</div>
+    <div class="stat-desc">ปีการศึกษา 2569</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-info"><i class="ph ph-spinner-gap text-3xl"></i></div>
+    <div class="stat-title">กำลังดำเนินการ</div>
+    <div class="stat-value">11</div>
+    <div class="stat-desc">3 โปรเจกต์ใกล้ถึงกำหนดส่ง</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-warning"><i class="ph ph-hourglass-medium text-3xl"></i></div>
+    <div class="stat-title">รอตรวจสอบ</div>
+    <div class="stat-value">4</div>
+    <div class="stat-desc">รอที่ปรึกษาอนุมัติ</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-success"><i class="ph ph-check-circle text-3xl"></i></div>
+    <div class="stat-title">เสร็จสิ้น</div>
+    <div class="stat-value">9</div>
+    <div class="stat-desc">↗︎ 2 โปรเจกต์เดือนนี้</div>
+  </div>
+</div>
+
+<div class="card bg-base-0 card-body">
+  {# Filters. HTMX re-renders only the table, same pattern as users/index.html #}
+  <div class="flex flex-col lg:flex-row justify-between gap-4">
+    <form action="{{ url_for('projects.index') }}" method="get" class="flex flex-col sm:flex-row gap-2 w-full lg:w-auto"
+      hx-get="{{ url_for('projects.index') }}" hx-target="#projects-table" hx-select="#projects-table"
+      hx-swap="outerHTML" hx-trigger="input changed delay:400ms from:input, change from:select, submit"
+      hx-push-url="true">
+      <label class="input w-full sm:w-80">
+        <i class="ph ph-magnifying-glass"></i>
+        <input type="search" name="search" class="grow" placeholder="ค้นหาชื่อโปรเจกต์, รหัส, สมาชิก">
+      </label>
+      <select name="status" class="select w-full sm:w-44">
+        <option value="">ทุกสถานะ</option>
+        {% for key, item in status_map.items() %}
+        <option value="{{ key }}">{{ item.label }}</option>
+        {% endfor %}
+      </select>
+      <select name="area" class="select w-full sm:w-48">
+        <option value="">ทุกสายงานวิจัย</option>
+        <option>AI / LLM</option>
+        <option>Cybersecurity</option>
+        <option>IoT</option>
+        <option>Computer Vision</option>
+        <option>DevOps</option>
+      </select>
+    </form>
+
+    {# TODO: point to projects.create_or_edit once the route exists #}
+    <a href="#" class="btn btn-primary">
+      <i class="ph ph-plus"></i>
+      เพิ่มโปรเจกต์
+    </a>
+  </div>
+
+  <div id="projects-table" class="overflow-x-auto mt-4">
+    <table class="table">
+      <thead>
+        <tr>
+          <th>โปรเจกต์</th>
+          <th>อาจารย์ที่ปรึกษา</th>
+          <th>สมาชิก</th>
+          <th>ความคืบหน้า</th>
+          <th>สถานะ</th>
+          <th>กำหนดส่ง</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for project in projects %}
+        {% set status = status_map[project.status] %}
+        <tr class="hover:bg-base-100">
+          <td class="min-w-56 max-w-xs">
+            <a href="#" class="font-medium hover:text-primary whitespace-normal">{{ project.name }}</a>
+            <div class="flex items-center gap-2 mt-1 text-xs text-base-content/60">
+              <span class="whitespace-nowrap">{{ project.code }}</span>
+              <span class="badge badge-outline badge-xs whitespace-nowrap">{{ project.area }}</span>
+            </div>
+          </td>
+          <td class="whitespace-nowrap">{{ project.advisor }}</td>
+          <td>
+            <div class="avatar-group -space-x-2">
+              {% for member in project.members[:3] %}
+              <div class="avatar avatar-placeholder">
+                <div class="{{ avatar_colors[loop.index0 % avatar_colors | length] }} w-8 text-xs border-2 border-base-0">
+                  <span>{{ member }}</span>
+                </div>
+              </div>
+              {% endfor %}
+              {% if project.members | length > 3 %}
+              <div class="avatar avatar-placeholder">
+                <div class="bg-base-300 text-base-content w-8 text-xs border-2 border-base-0">
+                  <span>+{{ project.members | length - 3 }}</span>
+                </div>
+              </div>
+              {% endif %}
+            </div>
+          </td>
+          <td>
+            <div class="flex items-center gap-2">
+              <progress class="progress {{ 'progress-success' if project.progress == 100 else 'progress-primary' }} w-20"
+                value="{{ project.progress }}" max="100"></progress>
+              <span class="text-sm tabular-nums">{{ project.progress }}%</span>
+            </div>
+            <div class="text-xs text-base-content/60 mt-1">อัปเดต {{ project.updated }}</div>
+          </td>
+          <td>
+            <span class="badge whitespace-nowrap {{ status.badge }}">{{ status.label }}</span>
+          </td>
+          <td class="whitespace-nowrap">{{ project.due }}</td>
+          <td class="whitespace-nowrap">
+            <div class="flex justify-end gap-1">
+              <a href="#" class="btn btn-ghost btn-sm" title="ดูรายละเอียด">
+                <i class="ph ph-eye"></i>
+              </a>
+              <a href="#" class="btn btn-ghost btn-sm" title="แก้ไข">
+                <i class="ph ph-pencil-simple"></i>
+              </a>
+              <button type="button" class="btn btn-ghost btn-sm text-error" title="ปิดใช้งาน">
+                <i class="ph ph-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+        {% else %}
+        <tr>
+          <td colspan="7" class="text-center text-base-content/60 py-8">ไม่พบโปรเจกต์</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    {# Static pagination placeholder; swap for paginations.render_pagination(...) when wired up #}
+    <div class="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
+      <div class="text-sm text-base-content/60">
+        แสดง <span class="font-semibold text-base-content">1-6</span> จาก
+        <span class="font-semibold text-base-content">24</span> รายการ
+      </div>
+      <div class="join">
+        <button class="join-item btn btn-sm" disabled><i class="ph ph-caret-left"></i></button>
+        <button class="join-item btn btn-sm btn-primary">1</button>
+        <button class="join-item btn btn-sm">2</button>
+        <button class="join-item btn btn-sm">3</button>
+        <button class="join-item btn btn-sm">4</button>
+        <button class="join-item btn btn-sm"><i class="ph ph-caret-right"></i></button>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}
