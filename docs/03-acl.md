@@ -5,19 +5,20 @@
 > **ทุก route ต้องกำหนดสิทธิ์ผ่าน decorator เท่านั้น**
 > ใช้ `@login_required` หรือ `@roles_required([...])` ห้ามเขียน if เช็กสิทธิ์ในตัว view เพื่อกันการเข้าถึงหน้า
 
-| Decorator | Import จาก | ใช้เมื่อ |
-|---|---|---|
-| `@login_required` | `flask_login` | ผู้ใช้ทุกคนที่ login แล้วเข้าได้ |
-| `@roles_required(["admin"])` | `app_name.web.utils.acl` | ต้องมี role ที่กำหนด **อย่างน้อย 1 ตัว** |
-| *(ไม่มี decorator)* + comment `# public:` | — | หน้าสาธารณะที่ตั้งใจเปิดให้ทุกคน |
+| Decorator                                 | Import จาก            | ใช้เมื่อ                                 |
+| ----------------------------------------- | --------------------- | ---------------------------------------- |
+| `@login_required`                         | `flask_login`         | ผู้ใช้ทุกคนที่ login แล้วเข้าได้         |
+| `@roles_required(["admin"])`              | `gukgu.web.utils.acl` | ต้องมี role ที่กำหนด **อย่างน้อย 1 ตัว** |
+| _(ไม่มี decorator)_ + comment `# public:` | —                     | หน้าสาธารณะที่ตั้งใจเปิดให้ทุกคน         |
 
 ```python
 from flask_login import login_required
 
-from app_name.web.utils.acl import roles_required
+from gukgu.web.utils.acl import roles_required
 ```
 
 ข้อควรระวังเรื่องชื่อ:
+
 - ชื่อจริงคือ **`roles_required`** (มี s) ไม่ใช่ `role_required`
 - argument ต้องเป็น **list** เสมอ: `@roles_required(["admin"])` ไม่ใช่ `@roles_required("admin")` ถ้าส่ง string มา ตัว `in` จะเช็กทีละตัวอักษร
 - `roles_required` ตรวจการ login ให้ในตัวแล้ว ไม่ต้องใส่ `@login_required` ซ้อนอีกชั้น
@@ -93,21 +94,22 @@ def settings():
 การซ่อนเมนูหรือปุ่มใน template เช่น `{% if current_user.is_admin() %}` ใน `base/sidebar.html` **เป็นแค่ UX** ผู้ใช้ยังพิมพ์ URL หรือยิง POST ตรงเข้ามาได้ ดังนั้นทุก endpoint ที่ปุ่มนั้นเรียก ต้องมี decorator ของตัวเองเสมอ
 
 กฎเดียวกันใช้กับ:
+
 - endpoint ที่ HTMX เรียก (`hx-get`, `hx-post`)
 - endpoint ที่คืน JSON
 - endpoint ที่ถูกเรียกจาก `fetch()` ใน JavaScript
 
 ## พฤติกรรมเมื่อไม่ผ่าน
 
-| สถานการณ์ | ผลลัพธ์ |
-|---|---|
-| ยังไม่ login | redirect ไป `accounts.login?next=<url เดิม>` (กำหนดไว้ที่ `login_manager.login_view`) |
-| login แล้วแต่ role ไม่ตรง | `403` render ด้วย `base/error.html` |
-| บัญชี `status="inactive"` | login ไม่ได้ (`User.is_active` คืน `False`) |
+| สถานการณ์                 | ผลลัพธ์                                                                               |
+| ------------------------- | ------------------------------------------------------------------------------------- |
+| ยังไม่ login              | redirect ไป `accounts.login?next=<url เดิม>` (กำหนดไว้ที่ `login_manager.login_view`) |
+| login แล้วแต่ role ไม่ตรง | `403` render ด้วย `base/error.html`                                                   |
+| บัญชี `status="inactive"` | login ไม่ได้ (`User.is_active` คืน `False`)                                           |
 
 ## Role
 
-Role ทั้งหมดประกาศไว้ที่ `USER_ROLES` ใน `app_name/models/users.py`
+Role ทั้งหมดประกาศไว้ที่ `USER_ROLES` ใน `gukgu/models/users.py`
 
 ```python
 USER_ROLES = [
@@ -117,6 +119,7 @@ USER_ROLES = [
 ```
 
 ขั้นตอนเพิ่ม role ใหม่:
+
 1. เพิ่ม tuple `(value, label ภาษาไทย)` ใน `USER_ROLES` โดยให้ value เป็นภาษาอังกฤษ snake_case เช่น `("camp_staff", "เจ้าหน้าที่ศูนย์")`
 2. ถ้าต้องใช้ใน template บ่อย ให้เพิ่ม helper method ใน `User` เช่น `def is_camp_staff(self): return self.has_role("camp_staff")`
 3. ใช้ใน view ผ่าน `@roles_required(["admin", "camp_staff"])`

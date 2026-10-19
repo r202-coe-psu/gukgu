@@ -1,6 +1,6 @@
 # 02 · Route และ CRUD Convention
 
-เอกสารนี้กำหนดวิธีตั้งชื่อและวิธีเขียน route ของทุก feature ทุกตัวอย่างใช้ feature สมมติชื่อ `projects` และต้นแบบจริงในโค้ดดูได้ที่ `app_name/web/views/users.py`
+เอกสารนี้กำหนดวิธีตั้งชื่อและวิธีเขียน route ของทุก feature ทุกตัวอย่างใช้ feature สมมติชื่อ `projects` และต้นแบบจริงในโค้ดดูได้ที่ `gukgu/web/views/users.py`
 
 ## 1. การตั้งชื่อ
 
@@ -128,7 +128,7 @@ project = models.Project.objects.get(id=project_id)
 
 ### 3.10 Business logic ที่ยาว
 
-ถ้า logic ใน view ยาวเกิน 30–40 บรรทัด หรือถูกเรียกจากหลายที่ (view, worker, script) ให้แยกไปเป็น function ใน `app_name/services/<feature>.py` แล้วให้ view ทำแค่ อ่าน input → เรียก service → render/redirect
+ถ้า logic ใน view ยาวเกิน 30–40 บรรทัด หรือถูกเรียกจากหลายที่ (view, worker, script) ให้แยกไปเป็น function ใน `gukgu/services/<feature>.py` แล้วให้ view ทำแค่ อ่าน input → เรียก service → render/redirect
 
 ## 4. Checklist ก่อนเปิด PR (route)
 

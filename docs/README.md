@@ -3,7 +3,7 @@
 เอกสารชุดนี้คือข้อตกลงในการเขียนโค้ดสำหรับทุกโปรเจกต์ที่สร้างจาก boilerplate นี้
 เป้าหมายคือให้ทุกคนในทีม (และ AI coding agent) เขียนโค้ดออกมาหน้าตาเดียวกัน อ่านง่าย review ง่าย และปลอดภัยเป็นค่าเริ่มต้น
 
-> ตัวอย่างในเอกสารอ้างชื่อ package `app_name` ถ้าโปรเจกต์ของคุณ rename แล้ว ให้แทนด้วยชื่อ package จริง
+> ตัวอย่างในเอกสารอ้างชื่อ package `gukgu` ถ้าโปรเจกต์ของคุณ rename แล้ว ให้แทนด้วยชื่อ package จริง
 
 ## อ่านอะไรก่อน
 
@@ -16,13 +16,13 @@
 
 ที่เหลือเปิดอ่านเมื่อต้องใช้:
 
-| เอกสาร | เรื่อง |
-|---|---|
-| [04-models.md](04-models.md) | MongoEngine model, field มาตรฐาน, index, soft delete |
-| [05-forms-templates.md](05-forms-templates.md) | WTForms, Jinja layout, macro, flash, HTMX, CSRF |
-| [06-jobs-cache-config.md](06-jobs-cache-config.md) | Background job (RQ), cache, config และ secret |
-| [07-testing.md](07-testing.md) | pytest fixture, test ขั้นต่ำที่ต้องมี, lint |
-| [08-git-workflow.md](08-git-workflow.md) | Branch, commit message, PR checklist |
+| เอกสาร                                             | เรื่อง                                               |
+| -------------------------------------------------- | ---------------------------------------------------- |
+| [04-models.md](04-models.md)                       | MongoEngine model, field มาตรฐาน, index, soft delete |
+| [05-forms-templates.md](05-forms-templates.md)     | WTForms, Jinja layout, macro, flash, HTMX, CSRF      |
+| [06-jobs-cache-config.md](06-jobs-cache-config.md) | Background job (RQ), cache, config และ secret        |
+| [07-testing.md](07-testing.md)                     | pytest fixture, test ขั้นต่ำที่ต้องมี, lint          |
+| [08-git-workflow.md](08-git-workflow.md)           | Branch, commit message, PR checklist                 |
 
 ## กฎ 5 ข้อที่ห้ามลืม
 

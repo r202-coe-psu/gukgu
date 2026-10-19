@@ -2,7 +2,7 @@ VERSION = "0.1.0"
 APP_TITLE = "App Name"
 SECRET_KEY = "changethisonproduction"
 
-MONGODB_DB = "app_name_db"
+MONGODB_DB = "gukgu_db"
 MONGODB_HOST = "localhost"
 MONGODB_PORT = 27017
 

@@ -12,9 +12,9 @@ Starter for server-rendered Flask projects:
 Rename the package and identifiers (replace `myproject` with your project name):
 
 ```bash
-git mv app_name myproject
-grep -rlI --exclude-dir={.git,.venv,node_modules} -e app_name -e gukgu . \
-  | xargs sed -i 's/app_name/myproject/g; s/gukgu/myproject/g'
+git mv gukgu myproject
+grep -rlI --exclude-dir={.git,.venv,node_modules} -e gukgu -e gukgu . \
+  | xargs sed -i 's/gukgu/myproject/g; s/gukgu/myproject/g'
 ```
 
 Then set `APP_TITLE` in `.env` and adjust the DaisyUI theme in
@@ -49,7 +49,7 @@ docker compose up -d --build
 ## Project layout
 
 ```
-app_name/
+gukgu/
 ├── default_settings.py     # config defaults (overridden by .env, then env vars)
 ├── cmd/                    # CLI entrypoints: app-web, app-worker
 ├── models/                 # MongoEngine documents

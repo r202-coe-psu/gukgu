@@ -18,7 +18,7 @@ poetry run ruff check . && poetry run ruff format --check .
 ## Rules
 
 1. **Every route must have an ACL decorator** placed _below_ `@module.route(...)`:
-   `@login_required` (from `flask_login`) or `@roles_required(["role"])` (from `app_name.web.utils.acl`, takes a **list**).
+   `@login_required` (from `flask_login`) or `@roles_required(["role"])` (from `gukgu.web.utils.acl`, takes a **list**).
    Intentionally public routes need a `# public: <reason>` comment. Never gate pages with `if role in current_user.roles`; in-view checks are only for record ownership. → `docs/03-acl.md`
 2. **CRUD naming**: `web/views/<plural>.py` with `module = Blueprint("<plural>", __name__, url_prefix="/<plural-kebab>")`; functions `index`, `view`, `create_or_edit`, `delete`; URL param `<singular>_id`; templates `templates/<plural>/{index,view,create_or_edit}.html`. → `docs/02-routes-crud.md`
 3. Mutations are **POST only** with a CSRF token, then `flash(...)` + `redirect(...)`.

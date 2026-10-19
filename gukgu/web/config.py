@@ -41,7 +41,7 @@ def load_config(config: flask.Config) -> flask.Config:
     The .env path defaults to <project root>/.env and can be overridden with
     $APP_SETTINGS.
     """
-    config.from_object("app_name.default_settings")
+    config.from_object("gukgu.default_settings")
 
     env_file = os.environ.get(SETTINGS_ENVVAR, str(PROJECT_ROOT / ".env"))
     logger.debug(f"settings file: {env_file}")

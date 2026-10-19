@@ -21,7 +21,7 @@ dependencies = [
 ]
 
 [tool.poetry]
-packages = [{ include = "app_name" }]
+packages = [{ include = "gukgu" }]
 
 [tool.poetry.group.dev.dependencies]
 pytest = "^8.4"
@@ -29,15 +29,15 @@ mongomock = "^4.3"
 ruff = "^0.13"
 
 [tool.poetry.scripts]
-app-web = "app_name.cmd.web:main"
-app-worker = "app_name.cmd.worker:main"
+app-web = "gukgu.cmd.web:main"
+app-worker = "gukgu.cmd.worker:main"
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
 
 [tool.ruff]
 line-length = 88
-extend-exclude = ["app_name/web/static"]
+extend-exclude = ["gukgu/web/static"]
 
 [build-system]
 requires = ["poetry-core>=2.0.0,<3.0.0"]

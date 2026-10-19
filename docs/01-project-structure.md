@@ -16,12 +16,12 @@ Browser ──► gunicorn ──► Flask app (create_app)
            (MongoEngine)   (cache + queue)
 ```
 
-Web กับ worker ใช้ codebase เดียวกัน ต่างกันแค่ entrypoint ใน `app_name/cmd/`
+Web กับ worker ใช้ codebase เดียวกัน ต่างกันแค่ entrypoint ใน `gukgu/cmd/`
 
 ## โครงไฟล์
 
 ```
-app_name/
+gukgu/
 ├── default_settings.py        # ค่า default ของ config ทุกตัว
 ├── cmd/
 │   ├── web.py                 # entrypoint: app-web (dev server)
@@ -56,7 +56,7 @@ scripts/                       # run-web, run-worker, npm, init-admin.py
 
 ## ลำดับการ init ใน `create_app()`
 
-`app_name/web/__init__.py` เรียกตามลำดับนี้:
+`gukgu/web/__init__.py` เรียกตามลำดับนี้:
 
 ```
 load_config → csrf → views (blueprints + template filters) → cache → db → acl → rq → oauth → error handlers
@@ -66,13 +66,13 @@ load_config → csrf → views (blueprints + template filters) → cache → db 
 
 ## เพิ่ม feature ใหม่ต้องแตะไฟล์ไหนบ้าง
 
-| ลำดับ | ไฟล์ | หมายเหตุ |
-|---|---|---|
-| 1 | `models/<plural>.py` + `models/__init__.py` | ต้อง export ใน `__init__` ด้วย |
-| 2 | `web/forms/<plural>.py` + `web/forms/__init__.py` | |
-| 3 | `web/views/<plural>.py` | register อัตโนมัติ ไม่ต้องแก้ไฟล์อื่น |
-| 4 | `web/templates/<plural>/*.html` | |
-| 5 | `web/templates/base/sidebar.html` | เพิ่มเมนู (ถ้ามี) |
-| 6 | `tests/test_<plural>.py` | |
+| ลำดับ | ไฟล์                                              | หมายเหตุ                              |
+| ----- | ------------------------------------------------- | ------------------------------------- |
+| 1     | `models/<plural>.py` + `models/__init__.py`       | ต้อง export ใน `__init__` ด้วย        |
+| 2     | `web/forms/<plural>.py` + `web/forms/__init__.py` |                                       |
+| 3     | `web/views/<plural>.py`                           | register อัตโนมัติ ไม่ต้องแก้ไฟล์อื่น |
+| 4     | `web/templates/<plural>/*.html`                   |                                       |
+| 5     | `web/templates/base/sidebar.html`                 | เพิ่มเมนู (ถ้ามี)                     |
+| 6     | `tests/test_<plural>.py`                          |                                       |
 
 ตัวอย่างโค้ดครบทุกไฟล์อยู่ใน [09-feature-scaffold.md](09-feature-scaffold.md)

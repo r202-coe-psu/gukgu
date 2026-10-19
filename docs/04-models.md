@@ -2,7 +2,7 @@
 
 ## ไฟล์และการตั้งชื่อ
 
-- 1 domain ต่อ 1 ไฟล์: `app_name/models/<plural>.py` เช่น `models/projects.py`
+- 1 domain ต่อ 1 ไฟล์: `gukgu/models/<plural>.py` เช่น `models/projects.py`
 - ชื่อ class เป็น **เอกพจน์** PascalCase เช่น `Project`
 - ชื่อ collection เป็นพหูพจน์ snake_case และ**ต้องระบุใน `meta` เสมอ** (ไม่ปล่อยให้ MongoEngine ตั้งเอง จะได้เปลี่ยนชื่อ class ทีหลังได้โดยข้อมูลไม่หาย)
 - ทุก model ต้อง import และใส่ใน `__all__` ของ `models/__init__.py` แล้วโค้ดส่วนอื่นเรียกผ่าน `models.Project` เสมอ
@@ -39,21 +39,21 @@ updated_date = me.DateTimeField(required=True, default=datetime.datetime.now)
 updater = me.ReferenceField("User", dbref=True)
 ```
 
-| Field | ใช้ทำอะไร | ใครเป็นคน set |
-|---|---|---|
-| `status` | soft delete (`active` / `inactive`) และสถานะอื่นตาม domain | view |
-| `created_date` | วันที่สร้าง | default |
-| `creator` | คนสร้าง | view ตอน create |
-| `updated_date` | แก้ไขล่าสุด | view ทุกครั้งที่ save (**set เอง** ไม่ใช้ `auto_now`) |
-| `updater` | คนแก้ล่าสุด | view ทุกครั้งที่ save |
+| Field          | ใช้ทำอะไร                                                  | ใครเป็นคน set                                         |
+| -------------- | ---------------------------------------------------------- | ----------------------------------------------------- |
+| `status`       | soft delete (`active` / `inactive`) และสถานะอื่นตาม domain | view                                                  |
+| `created_date` | วันที่สร้าง                                                | default                                               |
+| `creator`      | คนสร้าง                                                    | view ตอน create                                       |
+| `updated_date` | แก้ไขล่าสุด                                                | view ทุกครั้งที่ save (**set เอง** ไม่ใช้ `auto_now`) |
+| `updater`      | คนแก้ล่าสุด                                                | view ทุกครั้งที่ save                                 |
 
 ## ค่าของ `status`: ใช้ `active` คู่กับ `inactive` เท่านั้น
 
 สถานะ "เปิด/ปิดการใช้งาน" มีค่าที่อนุญาตแค่ 2 คำ และเขียนแบบนี้ทุก model ทุกโปรเจกต์:
 
-| ค่า | ความหมาย | label |
-|---|---|---|
-| `active` | ใช้งานอยู่ (ค่า default) | `ใช้งาน` |
+| ค่า        | ความหมาย                            | label          |
+| ---------- | ----------------------------------- | -------------- |
+| `active`   | ใช้งานอยู่ (ค่า default)            | `ใช้งาน`       |
 | `inactive` | ปิดการใช้งาน / ถูกลบแบบ soft delete | `ปิดการใช้งาน` |
 
 **ห้ามใช้** `disactive`, `deactive`, `deactivate`, `deactivated` หรือคำอื่นที่หมายถึงสถานะเดียวกัน ทั้งในค่า field, choices, query, test และ template
@@ -113,8 +113,8 @@ def display_status(self):
 Worker และ script ไม่มี Flask app ให้ connect ผ่าน `models.init_mongoengine(settings)` ตามแบบใน `worker/server.py` และ `scripts/init-admin.py`
 
 ```python
-from app_name import models
-from app_name.web.config import get_settings
+from gukgu import models
+from gukgu.web.config import get_settings
 
 models.init_mongoengine(get_settings())
 ```
@@ -122,5 +122,6 @@ models.init_mongoengine(get_settings())
 ## การเปลี่ยน schema ของข้อมูลเดิม
 
 MongoDB ไม่มี migration อัตโนมัติ ถ้าเพิ่ม field ที่ `required=True` หรือเปลี่ยนชื่อ field:
+
 1. ใส่ `default=` ให้ field ใหม่เสมอ เพื่อให้ document เก่ายังโหลดได้
 2. ถ้าต้องแปลงข้อมูลเก่า ให้เขียน script ใน `scripts/migrate-<yyyymmdd>-<เรื่อง>.py` ที่รันซ้ำได้โดยไม่พัง (idempotent) แล้วระบุใน PR ว่าต้องรัน

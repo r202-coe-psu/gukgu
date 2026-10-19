@@ -6,7 +6,7 @@
 
 ### เขียน task
 
-ทุก task อยู่ใน `app_name/worker/tasks.py` (ถ้ามีเยอะให้แยกเป็น `worker/tasks/<feature>.py`)
+ทุก task อยู่ใน `gukgu/worker/tasks.py` (ถ้ามีเยอะให้แยกเป็น `worker/tasks/<feature>.py`)
 
 ```python
 def export_projects(user_id: str, file_id: str):
@@ -15,6 +15,7 @@ def export_projects(user_id: str, file_id: str):
 ```
 
 กฎ:
+
 - **argument ส่งเป็นค่า primitive** (`str`, `int`, `dict`) ส่วน document ให้ส่ง `str(doc.id)` แล้วไปโหลดใหม่ใน task ห้ามส่ง Document object เพราะ RQ ต้อง pickle ข้อมูล และข้อมูลอาจเก่าไปแล้วตอนที่ job เริ่มทำงาน
 - task ทำงาน**นอก Flask app context**: ใช้ `request`, `current_user`, `url_for`, `flash` ไม่ได้ และ worker connect DB ให้แล้วใน `worker/server.py`
 - task ควรรันซ้ำได้โดยไม่พัง (idempotent) เพราะ job อาจถูก retry
@@ -23,8 +24,8 @@ def export_projects(user_id: str, file_id: str):
 ### Enqueue จาก view
 
 ```python
-from app_name.web.redis_rq import redis_queue
-from app_name.worker import tasks
+from gukgu.web.redis_rq import redis_queue
+from gukgu.worker import tasks
 
 job = redis_queue.enqueue(tasks.export_projects, str(current_user.id), str(export_file.id))
 flash("กำลังสร้างไฟล์ ระบบจะแจ้งเมื่อเสร็จ", "warning")
@@ -32,10 +33,10 @@ flash("กำลังสร้างไฟล์ ระบบจะแจ้ง
 
 ## Cache (Flask-Caching + Redis)
 
-ใช้ `cache` จาก `app_name/web/caches.py` ตามแบบ `dashboard.get_summary`
+ใช้ `cache` จาก `gukgu/web/caches.py` ตามแบบ `dashboard.get_summary`
 
 ```python
-from app_name.web.caches import cache
+from gukgu.web.caches import cache
 
 
 @cache.memoize(timeout=60)
@@ -44,6 +45,7 @@ def get_summary():
 ```
 
 กฎ:
+
 - cache ที่ระดับ **function ที่คืนข้อมูล** ไม่ cache ทั้ง view ที่มีข้อมูลเฉพาะผู้ใช้ (ไม่อย่างนั้นข้อมูลจะหลุดไปให้คนอื่นเห็น)
 - ระบุ `timeout` ทุกครั้ง
 - ถ้าข้อมูลเปลี่ยนแล้วต้องเห็นผลทันที ให้ invalidate หลัง save: `cache.delete_memoized(get_summary)`
@@ -56,7 +58,7 @@ def get_summary():
 
 `web/config.py:load_config()` โหลดตามลำดับนี้ ตัวหลังทับตัวก่อน:
 
-1. `app_name/default_settings.py`: ค่า default
+1. `gukgu/default_settings.py`: ค่า default
 2. ไฟล์ `.env` ที่ root ของโปรเจกต์ (เปลี่ยน path ได้ด้วย env var `APP_SETTINGS`)
 3. Environment variables ของ process **เฉพาะ key ที่มีอยู่แล้วจากข้อ 1 หรือ 2**
 

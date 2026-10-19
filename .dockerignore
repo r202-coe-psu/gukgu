@@ -3,4 +3,4 @@
 .env
 **/__pycache__
 **/node_modules
-app_name/web/static/css/app.css
+gukgu/web/static/css/app.css

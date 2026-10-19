@@ -2,8 +2,8 @@
 
 Enqueue from a view with:
 
-    from app_name.web.redis_rq import redis_queue
-    from app_name.worker import tasks
+    from gukgu.web.redis_rq import redis_queue
+    from gukgu.worker import tasks
 
     job = redis_queue.enqueue(tasks.example_task, str(current_user.id))
 """

@@ -2,28 +2,28 @@
 
 ตัวอย่างนี้คือ feature `projects` ที่เขียนตาม convention ทุกข้อในเอกสารชุดนี้ เวลาจะเริ่ม feature ใหม่ให้ copy ไปแล้ว **แทนชื่อ** ตามตารางนี้:
 
-| ในตัวอย่าง | แทนด้วย | เช่น |
-|---|---|---|
-| `projects` | ชื่อ feature (พหูพจน์) | `refugee_camps` |
-| `/projects` | url_prefix (kebab-case) | `/refugee-camps` |
-| `Project` | ชื่อ model (เอกพจน์) | `RefugeeCamp` |
-| `project` / `project_id` | ชื่อตัวแปรเอกพจน์ | `refugee_camp` / `refugee_camp_id` |
-| `PROJECT_STATUS_CHOICES` | ชื่อ choices | `REFUGEE_CAMP_STATUS_CHOICES` |
+| ในตัวอย่าง               | แทนด้วย                 | เช่น                               |
+| ------------------------ | ----------------------- | ---------------------------------- |
+| `projects`               | ชื่อ feature (พหูพจน์)  | `refugee_camps`                    |
+| `/projects`              | url_prefix (kebab-case) | `/refugee-camps`                   |
+| `Project`                | ชื่อ model (เอกพจน์)    | `RefugeeCamp`                      |
+| `project` / `project_id` | ชื่อตัวแปรเอกพจน์       | `refugee_camp` / `refugee_camp_id` |
+| `PROJECT_STATUS_CHOICES` | ชื่อ choices            | `REFUGEE_CAMP_STATUS_CHOICES`      |
 
 > โค้ดชุดนี้ผ่านการทดสอบจริงบน boilerplate แล้ว (pytest + ruff ผ่าน และเปิดทุกหน้าใน browser ได้)
 
 ผลลัพธ์ที่ได้:
 
-| Method | URL | สิทธิ์ |
-|---|---|---|
-| GET | `/projects` | login แล้ว |
-| GET | `/projects/<project_id>` | login แล้ว |
-| GET, POST | `/projects/create`, `/projects/<project_id>/edit` | `admin` |
-| POST | `/projects/<project_id>/delete` | `admin` |
+| Method    | URL                                               | สิทธิ์     |
+| --------- | ------------------------------------------------- | ---------- |
+| GET       | `/projects`                                       | login แล้ว |
+| GET       | `/projects/<project_id>`                          | login แล้ว |
+| GET, POST | `/projects/create`, `/projects/<project_id>/edit` | `admin`    |
+| POST      | `/projects/<project_id>/delete`                   | `admin`    |
 
 ---
 
-## 1. Model: `app_name/models/projects.py`
+## 1. Model: `gukgu/models/projects.py`
 
 ```python
 import datetime
@@ -60,7 +60,7 @@ class Project(me.Document):
         return dict(PROJECT_STATUS_CHOICES).get(self.status, self.status)
 ```
 
-แล้วเพิ่มใน `app_name/models/__init__.py`:
+แล้วเพิ่มใน `gukgu/models/__init__.py`:
 
 ```python
 from .projects import Project, PROJECT_STATUS_CHOICES
@@ -72,7 +72,7 @@ __all__ = [
 ]
 ```
 
-## 2. Form: `app_name/web/forms/projects.py`
+## 2. Form: `gukgu/web/forms/projects.py`
 
 ```python
 from flask_wtf import FlaskForm
@@ -94,7 +94,7 @@ class SearchProjectForm(FlaskForm):
     search = StringField("ค้นหา", [validators.Optional(), validators.Length(max=64)])
 ```
 
-แล้วเพิ่มใน `app_name/web/forms/__init__.py`:
+แล้วเพิ่มใน `gukgu/web/forms/__init__.py`:
 
 ```python
 from . import projects
@@ -105,7 +105,7 @@ __all__ = [
 ]
 ```
 
-## 3. View: `app_name/web/views/projects.py`
+## 3. View: `gukgu/web/views/projects.py`
 
 ไม่ต้อง register เพิ่มที่ไหน เพราะ `get_blueprints()` หาตัวแปร `module` ให้อัตโนมัติ
 
@@ -116,9 +116,9 @@ from flask import Blueprint, flash, redirect, render_template, request, url_for
 from flask_login import current_user, login_required
 from flask_mongoengine import Pagination
 
-from app_name import models
-from app_name.web import forms
-from app_name.web.utils.acl import roles_required
+from gukgu import models
+from gukgu.web import forms
+from gukgu.web.utils.acl import roles_required
 
 module = Blueprint("projects", __name__, url_prefix="/projects")
 
@@ -196,6 +196,7 @@ def delete(project_id):
 ```
 
 จุดที่ควรสังเกต:
+
 - `index` และ `view` ใช้ `@login_required` ส่วนที่เปลี่ยนข้อมูลใช้ `@roles_required(["admin"])` และ decorator อยู่ใต้ `@module.route` เสมอ
 - `create_or_edit` ใช้ `populate_obj` ได้ เพราะ field ของ `ProjectForm` ตรงกับ model ทั้งหมด
 - ถ้า `project_id` ไม่มีอยู่จริง `objects.get()` จะ raise และได้หน้า 500 ซึ่งเป็นพฤติกรรมที่ทีมยอมรับ (ดู [02-routes-crud.md](02-routes-crud.md) ข้อ 3.3)
@@ -203,20 +204,24 @@ def delete(project_id):
 
 ## 4. Templates
 
-### `app_name/web/templates/projects/index.html`
+### `gukgu/web/templates/projects/index.html`
 
 ```html
-{% extends "base/default_page.html" %}
-{% import "components/paginations.html" as paginations %}
-
-{% set title_page = "โปรเจกต์" %}
-
-{% block content %}
+{% extends "base/default_page.html" %} {% import "components/paginations.html"
+as paginations %} {% set title_page = "โปรเจกต์" %} {% block content %}
 <div class="card bg-base-0 card-body">
   <div class="flex flex-col md:flex-row justify-between gap-4">
-    <form action="{{ url_for('projects.index') }}" method="get" class="flex gap-2 w-full md:w-96"
-      hx-get="{{ url_for('projects.index') }}" hx-target="#projects-table" hx-select="#projects-table"
-      hx-swap="outerHTML" hx-trigger="input changed delay:400ms from:input, submit" hx-push-url="true">
+    <form
+      action="{{ url_for('projects.index') }}"
+      method="get"
+      class="flex gap-2 w-full md:w-96"
+      hx-get="{{ url_for('projects.index') }}"
+      hx-target="#projects-table"
+      hx-select="#projects-table"
+      hx-swap="outerHTML"
+      hx-trigger="input changed delay:400ms from:input, submit"
+      hx-push-url="true"
+    >
       <label class="input w-full">
         <i class="ph ph-magnifying-glass"></i>
         {{ form.search(placeholder="ค้นหาชื่อโปรเจกต์", class_="grow") }}
@@ -243,12 +248,19 @@ def delete(project_id):
         {% for project in projects_pagination.items %}
         <tr>
           <td>
-            <a href="{{ url_for('projects.view', project_id=project.id) }}" class="link link-hover">{{ project.name }}</a>
+            <a
+              href="{{ url_for('projects.view', project_id=project.id) }}"
+              class="link link-hover"
+              >{{ project.name }}</a
+            >
           </td>
           <td>{{ project.created_date | format_thai_datetime }}</td>
           <td class="text-right">
             {% if current_user.is_admin() %}
-            <a href="{{ url_for('projects.create_or_edit', project_id=project.id) }}" class="btn btn-ghost btn-sm">
+            <a
+              href="{{ url_for('projects.create_or_edit', project_id=project.id) }}"
+              class="btn btn-ghost btn-sm"
+            >
               <i class="ph ph-pencil-simple"></i>
             </a>
             {% endif %}
@@ -256,47 +268,53 @@ def delete(project_id):
         </tr>
         {% else %}
         <tr>
-          <td colspan="3" class="text-center text-base-content/60 py-8">ไม่พบโปรเจกต์</td>
+          <td colspan="3" class="text-center text-base-content/60 py-8">
+            ไม่พบโปรเจกต์
+          </td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
 
-    {{ paginations.render_pagination(projects_pagination, 'projects.index', kwargs={'search': search}) }}
+    {{ paginations.render_pagination(projects_pagination, 'projects.index',
+    kwargs={'search': search}) }}
   </div>
 </div>
 {% endblock content %}
 ```
 
-### `app_name/web/templates/projects/view.html`
+### `gukgu/web/templates/projects/view.html`
 
 ```html
-{% extends "base/default_page.html" %}
-
-{% set title_page = project.name %}
-
-{% block back_button %}
+{% extends "base/default_page.html" %} {% set title_page = project.name %} {%
+block back_button %}
 <a href="{{ url_for('projects.index') }}" class="btn btn-ghost btn-sm mb-2">
   <i class="ph ph-arrow-left"></i> กลับ
 </a>
-{% endblock back_button %}
-
-{% block content %}
+{% endblock back_button %} {% block content %}
 <div class="card bg-base-0 card-body max-w-2xl">
   <p class="whitespace-pre-line">{{ project.description or "-" }}</p>
   <p class="text-sm text-base-content/60">
-    สร้างเมื่อ {{ project.created_date | format_thai_datetime }}
-    {% if project.creator %}โดย {{ project.creator.get_fullname() }}{% endif %}
+    สร้างเมื่อ {{ project.created_date | format_thai_datetime }} {% if
+    project.creator %}โดย {{ project.creator.get_fullname() }}{% endif %}
   </p>
 
   {% if current_user.is_admin() %}
   <div class="flex justify-end gap-2 pt-4">
-    <form method="post" action="{{ url_for('projects.delete', project_id=project.id) }}"
-      onsubmit="return confirm('ยืนยันการลบโปรเจกต์นี้?')">
-      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <button class="btn btn-error btn-outline"><i class="ph ph-trash"></i> ลบ</button>
+    <form
+      method="post"
+      action="{{ url_for('projects.delete', project_id=project.id) }}"
+      onsubmit="return confirm('ยืนยันการลบโปรเจกต์นี้?')"
+    >
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}" />
+      <button class="btn btn-error btn-outline">
+        <i class="ph ph-trash"></i> ลบ
+      </button>
     </form>
-    <a href="{{ url_for('projects.create_or_edit', project_id=project.id) }}" class="btn btn-primary">
+    <a
+      href="{{ url_for('projects.create_or_edit', project_id=project.id) }}"
+      class="btn btn-primary"
+    >
       <i class="ph ph-pencil-simple"></i> แก้ไข
     </a>
   </div>
@@ -305,26 +323,19 @@ def delete(project_id):
 {% endblock content %}
 ```
 
-### `app_name/web/templates/projects/create_or_edit.html`
+### `gukgu/web/templates/projects/create_or_edit.html`
 
 ```html
-{% extends "base/default_page.html" %}
-{% import "base/html_renderer.html" as renderer %}
-
-{% set title_page = "แก้ไขโปรเจกต์" if project.id else "เพิ่มโปรเจกต์" %}
-
-{% block back_button %}
+{% extends "base/default_page.html" %} {% import "base/html_renderer.html" as
+renderer %} {% set title_page = "แก้ไขโปรเจกต์" if project.id else
+"เพิ่มโปรเจกต์" %} {% block back_button %}
 <a href="{{ url_for('projects.index') }}" class="btn btn-ghost btn-sm mb-2">
   <i class="ph ph-arrow-left"></i> กลับ
 </a>
-{% endblock back_button %}
-
-{% block content %}
+{% endblock back_button %} {% block content %}
 <form method="post" class="card bg-base-0 card-body space-y-2 max-w-2xl">
-  {{ form.csrf_token }}
-
-  {{ renderer.base_render(form.name) }}
-  {{ renderer.render_text_area_field(form.description) }}
+  {{ form.csrf_token }} {{ renderer.base_render(form.name) }} {{
+  renderer.render_text_area_field(form.description) }}
 
   <div class="flex justify-end gap-2 pt-4">
     <a href="{{ url_for('projects.index') }}" class="btn">ยกเลิก</a>
@@ -336,7 +347,7 @@ def delete(project_id):
 
 > ปุ่มแก้ไข/ลบถูกซ่อนด้วย `current_user.is_admin()` ซึ่งเป็นแค่ UX ส่วนการป้องกันจริงคือ `@roles_required(["admin"])` ใน view (ดู [03-acl.md](03-acl.md))
 
-## 5. เมนู: `app_name/web/templates/base/sidebar.html`
+## 5. เมนู: `gukgu/web/templates/base/sidebar.html`
 
 เพิ่มบรรทัดเดียวใน `<ul class="menu ...">`:
 
@@ -351,7 +362,7 @@ def delete(project_id):
 ```python
 import pytest
 
-from app_name import models
+from gukgu import models
 
 
 @pytest.fixture
@@ -418,4 +429,3 @@ poetry run pytest tests/test_projects.py
 poetry run ruff check . && poetry run ruff format --check .
 ./scripts/run-web             # เปิด http://localhost:8080/projects
 ```
-
