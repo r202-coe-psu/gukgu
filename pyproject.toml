@@ -1,5 +1,5 @@
 [project]
-name = "app-name"
+name = "gukgu"
 version = "0.1.0"
 description = "Flask + MongoEngine + RQ + HTMX/Tailwind starter"
 authors = []

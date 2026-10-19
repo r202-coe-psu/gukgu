@@ -5,9 +5,9 @@ from flask_login import current_user
 from flask_mongoengine import Pagination
 from mongoengine.queryset.visitor import Q
 
-from app_name import models
-from app_name.web import forms
-from app_name.web.utils.acl import roles_required
+from gukgu import models
+from gukgu.web import forms
+from gukgu.web.utils.acl import roles_required
 
 module = Blueprint("users", __name__, url_prefix="/users")
 

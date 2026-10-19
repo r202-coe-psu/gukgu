@@ -1,4 +1,4 @@
-from app_name.web.config import get_settings
+from gukgu.web.config import get_settings
 
 from .server import WorkerServer
 

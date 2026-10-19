@@ -13,8 +13,8 @@ Rename the package and identifiers (replace `myproject` with your project name):
 
 ```bash
 git mv app_name myproject
-grep -rlI --exclude-dir={.git,.venv,node_modules} -e app_name -e app-name . \
-  | xargs sed -i 's/app_name/myproject/g; s/app-name/myproject/g'
+grep -rlI --exclude-dir={.git,.venv,node_modules} -e app_name -e gukgu . \
+  | xargs sed -i 's/app_name/myproject/g; s/gukgu/myproject/g'
 ```
 
 Then set `APP_TITLE` in `.env` and adjust the DaisyUI theme in

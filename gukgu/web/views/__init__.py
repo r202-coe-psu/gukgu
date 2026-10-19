@@ -4,7 +4,7 @@ import pkgutil
 
 from flask import Blueprint, Flask
 
-from app_name.web.utils import template_filters
+from gukgu.web.utils import template_filters
 
 logger = logging.getLogger(__name__)
 

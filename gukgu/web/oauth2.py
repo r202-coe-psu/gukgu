@@ -18,7 +18,7 @@ from authlib.integrations.flask_client import OAuth
 from flask import redirect, session, url_for
 from flask_login import login_user
 
-from app_name import models
+from gukgu import models
 
 oauth2_client = OAuth()
 

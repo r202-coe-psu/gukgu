@@ -1,4 +1,4 @@
-from app_name import worker
+from gukgu import worker
 
 
 def main():

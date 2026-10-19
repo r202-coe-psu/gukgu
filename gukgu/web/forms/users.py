@@ -7,7 +7,7 @@ from wtforms import (
     validators,
 )
 
-from app_name.models.users import USER_ROLES
+from gukgu.models.users import USER_ROLES
 
 
 class BaseUserForm(FlaskForm):

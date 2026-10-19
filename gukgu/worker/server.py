@@ -3,7 +3,7 @@ import logging
 import redis
 from rq import Queue, SimpleWorker
 
-from app_name import models
+from gukgu import models
 
 logger = logging.getLogger(__name__)
 

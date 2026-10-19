@@ -3,7 +3,7 @@ from functools import wraps
 from flask import Flask, abort
 from flask_login import LoginManager, current_user
 
-from app_name.models.users import User
+from gukgu.models.users import User
 
 login_manager = LoginManager()
 login_manager.login_view = "accounts.login"

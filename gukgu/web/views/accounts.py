@@ -15,8 +15,8 @@ from flask import (
 )
 from flask_login import current_user, login_required, login_user, logout_user
 
-from app_name import models
-from app_name.web import forms, oauth2
+from gukgu import models
+from gukgu.web import forms, oauth2
 
 logger = logging.getLogger(__name__)
 
