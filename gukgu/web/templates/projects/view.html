@@ -1,0 +1,77 @@
+{% extends "base/default_page.html" %}
+
+{% set stage_badges = {"open": "badge-info", "doing": "badge-warning", "done": "badge-success"} %}
+
+{% block back_button %}
+<a href="{{ url_for('projects.index') }}" class="btn btn-ghost btn-sm mb-2">
+  <i class="ph ph-arrow-left"></i> กลับ
+</a>
+{% endblock back_button %}
+
+{% block content %}
+{# Own header instead of title_page so the stage badge can sit next to the name #}
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-4">
+  <div class="flex flex-wrap items-center gap-3">
+    <h1 class="text-xl font-bold">{{ project.name }}</h1>
+    <span class="badge badge-soft whitespace-nowrap {{ stage_badges.get(project.stage, '') }}">
+      {{ project.display_stage() }}
+    </span>
+  </div>
+
+  {% if current_user.is_admin() %}
+  <div class="flex gap-2">
+    <a href="{{ url_for('projects.create_or_edit', project_id=project.id) }}" class="btn btn-primary">
+      <i class="ph ph-pencil-simple"></i> แก้ไข
+    </a>
+    <form method="post" action="{{ url_for('projects.delete', project_id=project.id) }}"
+      onsubmit="return confirm('ยืนยันการลบโปรเจกต์นี้?')">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button class="btn btn-error btn-outline">
+        <i class="ph ph-trash"></i> ลบ
+      </button>
+    </form>
+  </div>
+  {% endif %}
+</div>
+
+<div class="grid grid-cols-1 lg:grid-cols-3 gap-4">
+  <div class="card bg-base-0 card-body lg:col-span-2">
+    <h2 class="font-semibold">รายละเอียด</h2>
+    <p class="whitespace-pre-line">{{ project.description or "-" }}</p>
+  </div>
+
+  <div class="card bg-base-0 card-body">
+    <dl class="space-y-3">
+      <div>
+        <dt class="text-sm text-base-content/60">กำหนดส่ง</dt>
+        <dd>{{ project.deadline | format_thai_date }}</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-base-content/60">มาจาก</dt>
+        <dd>{{ project.display_source() }}</dd>
+      </div>
+      <div>
+        <dt class="text-sm text-base-content/60">สมาชิก</dt>
+        <dd>
+          {% for member in project.members %}
+          <div>{{ member.get_fullname() }}</div>
+          {% else %}
+          ยังไม่มีสมาชิก
+          {% endfor %}
+        </dd>
+      </div>
+    </dl>
+  </div>
+
+  {# Placeholders until subtasks and updates are built #}
+  <div class="card bg-base-0 card-body lg:col-span-2">
+    <h2 class="font-semibold">งานย่อย</h2>
+    <p class="text-base-content/60">เร็ว ๆ นี้</p>
+  </div>
+
+  <div class="card bg-base-0 card-body">
+    <h2 class="font-semibold">ไทม์ไลน์อัปเดต</h2>
+    <p class="text-base-content/60">เร็ว ๆ นี้</p>
+  </div>
+</div>
+{% endblock content %}
