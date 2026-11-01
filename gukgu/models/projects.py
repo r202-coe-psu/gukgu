@@ -2,20 +2,20 @@ import datetime
 
 import mongoengine as me
 
-# สถานะตามกฎแล็บ: ใช้แค่เปิด/ปิด (soft delete)
+# Record status per lab rules: active/inactive only (used for soft delete)
 PROJECT_STATUS_CHOICES = [
     ("active", "ใช้งาน"),
     ("inactive", "ปิดการใช้งาน"),
 ]
 
-# ขั้นของงาน ตามภาพร่างหน้า 2
+# Work stage, kept separate from status (sketch page 2)
 PROJECT_STAGE_CHOICES = [
     ("open", "เปิดรับ"),
     ("doing", "กำลังทำ"),
     ("done", "เสร็จแล้ว"),
 ]
 
-# โปรเจกต์มาจากไหน ตามภาพร่างหน้า 5
+# Where the project comes from (sketch page 5)
 PROJECT_SOURCE_CHOICES = [
     ("department", "ภาควิชา"),
     ("external", "ภายนอก"),
@@ -36,7 +36,7 @@ class Project(me.Document):
     deadline = me.DateTimeField()
     members = me.ListField(me.ReferenceField("User", dbref=True))
 
-    # ช่องมาตรฐานที่ทุก model ต้องมี (ตาม docs/04)
+    # Standard fields every model must have (see docs/04)
     status = me.StringField(
         required=True,
         default="active",
