@@ -1,0 +1,24 @@
+<div class="member-row">
+  <div class="flex gap-2">
+    <input
+      type="text"
+      name="{{ field_name }}"
+      id="{{ field_name }}"
+      value="{{ field_value }}"
+      maxlength="255"
+      placeholder="ชื่อสมาชิก"
+      class="input w-full"
+    />
+    <button
+      type="button"
+      class="btn btn-ghost btn-square"
+      title="ลบสมาชิก"
+      hx-on:click="this.closest('.member-row').remove()"
+    >
+      <i class="ph ph-x"></i>
+    </button>
+  </div>
+  {% for error in field_errors %}
+  <p class="text-error text-sm">{{ error }}</p>
+  {% endfor %}
+</div>
