@@ -2,46 +2,54 @@ import datetime
 
 import mongoengine as me
 
-# Record status per lab rules: active/inactive only (used for soft delete)
 PROJECT_STATUS_CHOICES = [
     ("active", "ใช้งาน"),
     ("inactive", "ปิดการใช้งาน"),
 ]
 
-# Work stage, kept separate from status (sketch page 2)
 PROJECT_STAGE_CHOICES = [
     ("open", "เปิดรับ"),
-    ("doing", "กำลังทำ"),
-    ("done", "เสร็จแล้ว"),
+    ("in_progress", "กำลังทำ"),
+    ("done", "เสร็จ"),
 ]
 
-# Where the project comes from (sketch page 5)
 PROJECT_SOURCE_CHOICES = [
     ("department", "ภาควิชา"),
     ("external", "ภายนอก"),
+    ("grant", "ทุนวิจัย"),
 ]
 
 
 class Project(me.Document):
-    meta = {"collection": "projects", "indexes": ["name", "status", "stage"]}
+    meta = {
+        "collection": "projects",
+        "indexes": ["name", "status", "stage", "source"],
+    }
 
     name = me.StringField(required=True, max_length=255)
+    advisor = me.StringField(default="", max_length=255)
     description = me.StringField(default="")
+
     source = me.StringField(
-        default="department", choices=[s[0] for s in PROJECT_SOURCE_CHOICES]
+        required=True,
+        default="department",
+        choices=[source[0] for source in PROJECT_SOURCE_CHOICES],
     )
     stage = me.StringField(
-        default="open", choices=[s[0] for s in PROJECT_STAGE_CHOICES]
+        required=True,
+        default="open",
+        choices=[stage[0] for stage in PROJECT_STAGE_CHOICES],
     )
-    deadline = me.DateTimeField()
-    members = me.ListField(me.ReferenceField("User", dbref=True))
+    progress = me.IntField(required=True, default=0, min_value=0, max_value=100)
+    deadline = me.DateField()
+    members = me.ListField(me.StringField(max_length=255))
 
-    # Standard fields every model must have (see docs/04)
     status = me.StringField(
         required=True,
         default="active",
-        choices=[s[0] for s in PROJECT_STATUS_CHOICES],
+        choices=[status[0] for status in PROJECT_STATUS_CHOICES],
     )
+
     created_date = me.DateTimeField(required=True, default=datetime.datetime.now)
     creator = me.ReferenceField("User", dbref=True)
     updated_date = me.DateTimeField(required=True, default=datetime.datetime.now)

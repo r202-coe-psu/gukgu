@@ -15,9 +15,30 @@
   {{ form.hidden_tag() }}
 
   {{ renderer.base_render(form.name) }}
+  {{ renderer.base_render(form.advisor) }}
   {{ renderer.base_render(form.source) }}
   {{ renderer.base_render(form.stage) }}
   {{ renderer.render_text_area_field(form.description) }}
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">{{ form.members.label.text }}</legend>
+    <div id="member-list" class="space-y-2">
+      {% for member in form.members %}
+      {% with field_name=member.name, field_value=member.data or "", field_errors=member.errors %}
+      {% include "projects/member_field.html" %}
+      {% endwith %}
+      {% endfor %}
+    </div>
+    <button
+      type="button"
+      class="btn btn-outline btn-sm w-fit mt-2"
+      hx-get="{{ url_for('projects.member_field') }}"
+      hx-include="#member-list input"
+      hx-target="#member-list"
+      hx-swap="beforeend"
+    >
+      <i class="ph ph-plus"></i> เพิ่มสมาชิก
+    </button>
+  </fieldset>
   {{ renderer.base_render(form.deadline) }}
 
   <div class="flex justify-end gap-2 pt-4">

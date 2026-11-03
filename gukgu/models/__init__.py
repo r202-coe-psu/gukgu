@@ -5,10 +5,10 @@ from flask_mongoengine import MongoEngine
 from .users import User, USER_ROLES
 from .oauth2 import OAuth2Token
 from .projects import (
-    Project,
     PROJECT_STATUS_CHOICES,
     PROJECT_STAGE_CHOICES,
     PROJECT_SOURCE_CHOICES,
+    Project,
 )
 
 __all__ = [
