@@ -3,6 +3,34 @@
 {% set title_page = "แดชบอร์ด" %}
 
 {% block content %}
+<!--Project dashboard-->
+<div class="stats stats-vertical md:stats-horizontal shadow bg-base-0 w-full mb-4">
+  <div class="stat">
+    <div class="stat-figure text-primary"><i class="ph ph-flask text-3xl"></i></div>
+    <div class="stat-title">โปรเจกต์ทั้งหมด</div>
+    <div class="stat-value">24</div>
+    <div class="stat-desc">ปีการศึกษา 2569</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-info"><i class="ph ph-spinner-gap text-3xl"></i></div>
+    <div class="stat-title">กำลังดำเนินการ</div>
+    <div class="stat-value">11</div>
+    <div class="stat-desc">3 โปรเจกต์ใกล้ถึงกำหนดส่ง</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-warning"><i class="ph ph-hourglass-medium text-3xl"></i></div>
+    <div class="stat-title">รอตรวจสอบ</div>
+    <div class="stat-value">4</div>
+    <div class="stat-desc">รอที่ปรึกษาอนุมัติ</div>
+  </div>
+  <div class="stat">
+    <div class="stat-figure text-success"><i class="ph ph-check-circle text-3xl"></i></div>
+    <div class="stat-title">เสร็จสิ้น</div>
+    <div class="stat-value">9</div>
+    <div class="stat-desc">↗︎ 2 โปรเจกต์เดือนนี้</div>
+  </div>
+</div>
+<!--Users dashboard-->
 <div class="stats stats-vertical md:stats-horizontal shadow bg-base-0 w-full">
   <div class="stat">
     <div class="stat-figure text-primary"><i class="ph ph-users text-3xl"></i></div>

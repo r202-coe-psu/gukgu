@@ -74,7 +74,7 @@
         <progress class="progress progress-primary w-full" value="{{ project.progress }}" max="100"></progress>
         <div class="flex items-center justify-between text-sm mt-2">
           <span class="font-semibold">
-            {{ project.progress }}% 
+            {{ project.progress }}% ·
             {% if member_count %}{{ member_count }} คน{% else %}ยังไม่มีคน{% endif %}
           </span>
           {% if project.deadline %}
