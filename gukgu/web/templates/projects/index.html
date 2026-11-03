@@ -1,23 +1,22 @@
 {% extends "base/default_page.html" %}
 {% import "components/paginations.html" as paginations %}
-
 {% set title_page = "โปรเจกต์" %}
-
-{% set stage_badges = {"open": "badge-info", "doing": "badge-warning", "done": "badge-success"} %}
+{% set stage_badges = {"open": "badge-success", "in_progress": "badge-warning", "done": "badge-info"} %}
 
 {% block content %}
-<div class="card bg-base-0 card-body">
-  <div class="flex flex-col md:flex-row justify-between gap-4">
-    {# HTMX: re-render only the project list while typing #}
-    <form action="{{ url_for('projects.index') }}" method="get" class="flex gap-2 w-full md:w-96"
-      hx-get="{{ url_for('projects.index') }}" hx-target="#projects-list" hx-select="#projects-list"
-      hx-swap="outerHTML" hx-trigger="input changed delay:400ms from:input, submit" hx-push-url="true">
-      <input type="hidden" name="stage" value="{{ stage }}">
-      <label class="input w-full">
-        <i class="ph ph-magnifying-glass"></i>
-        {{ form.search(placeholder="ค้นหาชื่อโปรเจกต์", class_="grow") }}
-      </label>
-    </form>
+<div class="card bg-base-0 card-body gap-4">
+  <div class="flex flex-wrap items-center justify-between gap-3 pb-4 border-b border-base-200">
+    <div id="projects-tabs" class="flex flex-wrap gap-2">
+      {% for value, label in stage_tabs %}
+      <a
+        href="{{ url_for('projects.index', stage=value or None, search=search or None, source=source or None) }}"
+        class="btn btn-sm {{ 'btn-primary' if stage == value else 'btn-ghost bg-base-200 font-normal' }}"
+      >
+        {{ label }} ({{ stage_counts[value] }})
+      </a>
+      {% endfor %}
+    </div>
+
     {% if current_user.is_admin() %}
     <a href="{{ url_for('projects.create_or_edit') }}" class="btn btn-primary">
       <i class="ph ph-plus"></i>
@@ -26,40 +25,100 @@
     {% endif %}
   </div>
 
-  <div id="projects-list" class="mt-4">
-    {# Stage filter tabs keep the current search term #}
-    <div role="tablist" class="tabs tabs-box w-fit">
-      {% for value, label in form.stage.choices %}
-      <a role="tab" href="{{ url_for('projects.index', stage=value or None, search=search or None) }}"
-        class="tab {{ 'tab-active' if value == stage else '' }}">{{ label }}</a>
-      {% endfor %}
-    </div>
+  <form
+    action="{{ url_for('projects.index') }}"
+    method="get"
+    class="flex flex-col md:flex-row gap-3"
+    hx-get="{{ url_for('projects.index') }}"
+    hx-target="#projects-grid"
+    hx-select="#projects-grid"
+    hx-select-oob="#projects-tabs"
+    hx-swap="outerHTML"
+    hx-trigger="input changed delay:400ms from:input, change from:select, submit"
+    hx-push-url="true"
+  >
+    {{ form.stage(value=stage) }}
+    <label class="input w-full md:flex-1">
+      <i class="ph ph-magnifying-glass"></i>
+      {{ form.search(placeholder="ค้นหาชื่อโปรเจกต์, รายละเอียด หรือชื่อสมาชิก...", class_="grow") }}
+    </label>
+    {{ form.source(class_="select w-full md:w-96") }}
+  </form>
+</div>
 
-    <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4 mt-4">
-      {% for project in projects_pagination.items %}
-      <a href="{{ url_for('projects.view', project_id=project.id) }}"
-        class="card card-border bg-base-0 hover:shadow-md transition-shadow">
-        <div class="card-body">
-          <h2 class="card-title">{{ project.name }}</h2>
-          <p class="text-sm text-base-content/60">จาก: {{ project.display_source() }}</p>
-          <div class="flex items-center justify-between gap-2 mt-2">
-            <span class="badge badge-soft whitespace-nowrap {{ stage_badges.get(project.stage, '') }}">
-              {{ project.display_stage() }}
-            </span>
-            <span class="text-sm text-base-content/60 whitespace-nowrap">
-              <i class="ph ph-users"></i>
-              {% if project.members %}{{ project.members | length }} คน{% else %}ยังไม่มีคน{% endif %}
-            </span>
-          </div>
+<div id="projects-grid" class="mt-6">
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+    {% for project in projects_pagination.items %}
+    {% set member_count = project.members | length %}
+    <div class="card bg-base-0 card-body p-5 gap-0 border border-base-200 shadow-sm hover:border-primary/40 transition-colors">
+      <div class="flex items-start justify-between gap-3">
+        <div class="min-w-0">
+          <a
+            href="{{ url_for('projects.view', project_id=project.id) }}"
+            class="font-bold text-lg block truncate hover:text-primary"
+            >{{ project.name }}</a
+          >
+          {% if project.advisor %}
+          <p class="text-sm text-base-content/70 truncate">อาจารย์ที่ปรึกษา: {{ project.advisor }}</p>
+          {% endif %}
+          <p class="text-xs text-base-content/50 mt-1">จาก: {{ project.display_source() }}</p>
         </div>
-      </a>
-      {% else %}
-      <p class="col-span-full text-center text-base-content/60 py-8">ไม่พบโปรเจกต์</p>
-      {% endfor %}
-    </div>
+        <span class="badge badge-soft {{ stage_badges.get(project.stage, '') }} shrink-0 whitespace-nowrap">
+          {{ project.display_stage() }}
+        </span>
+      </div>
 
+      <p class="text-sm text-base-content/80 mt-3 line-clamp-2 min-h-10">{{ project.description }}</p>
+
+      <div class="mt-4 pt-4 border-t border-base-200">
+        <progress class="progress progress-primary w-full" value="{{ project.progress }}" max="100"></progress>
+        <div class="flex items-center justify-between text-sm mt-2">
+          <span class="font-semibold">
+            {{ project.progress }}% 
+            {% if member_count %}{{ member_count }} คน{% else %}ยังไม่มีคน{% endif %}
+          </span>
+          {% if project.deadline %}
+          <span class="flex items-center gap-1 text-base-content/50">
+            <i class="ph ph-calendar-blank"></i>
+            {{ project.deadline.strftime("%Y-%m-%d") }}
+          </span>
+          {% endif %}
+        </div>
+      </div>
+
+      <div class="flex items-center justify-between mt-4 min-h-8">
+        <div class="flex -space-x-2">
+          {% for member in project.members[:4] %}
+          <span
+            class="w-8 h-8 rounded-full bg-primary text-primary-content grid place-items-center text-xs font-semibold ring-2 ring-base-100"
+            title="{{ member }}"
+            >{{ member[:1] | upper }}</span
+          >
+          {% endfor %}
+          {% if member_count > 4 %}
+          <span class="w-8 h-8 rounded-full bg-base-300 grid place-items-center text-xs font-semibold ring-2 ring-base-100"
+            >+{{ member_count - 4 }}</span
+          >
+          {% endif %}
+        </div>
+        <a
+          href="{{ url_for('projects.view', project_id=project.id) }}"
+          class="text-sm font-medium text-primary hover:underline"
+        >
+          เปิดดูรายละเอียด <i class="ph ph-arrow-right"></i>
+        </a>
+      </div>
+    </div>
+    {% else %}
+    <div class="card bg-base-0 card-body text-center text-base-content/60 py-8 md:col-span-2 lg:col-span-3">
+      ไม่พบโปรเจกต์
+    </div>
+    {% endfor %}
+  </div>
+
+  <div class="mt-6">
     {{ paginations.render_pagination(projects_pagination, 'projects.index',
-    kwargs={'search': search or None, 'stage': stage or None}) }}
+    kwargs={'search': search, 'source': source, 'stage': stage}) }}
   </div>
 </div>
 {% endblock content %}

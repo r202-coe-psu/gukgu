@@ -13,6 +13,7 @@
     <div>
       <p>อาจารย์ที่ปรึกษา: {{ project.advisor or "-" }}</p>
       <p class="text-sm text-base-content/60">จาก: {{ project.display_source() }}</p>
+      <p class="text-sm text-base-content/60">ประเภทงาน: {{ project.display_type() }}</p>
     </div>
     <span class="badge badge-soft">{{ project.display_stage() }}</span>
   </div>

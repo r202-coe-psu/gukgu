@@ -11,6 +11,7 @@ PROJECT_STAGE_CHOICES = [
     ("open", "เปิดรับ"),
     ("in_progress", "กำลังทำ"),
     ("done", "เสร็จ"),
+    ("stay", "พักไว้"),
 ]
 
 PROJECT_SOURCE_CHOICES = [
@@ -19,11 +20,19 @@ PROJECT_SOURCE_CHOICES = [
     ("grant", "ทุนวิจัย"),
 ]
 
+PROJECT_TYPE_CHOICES = [
+    ("AI/LLM", "Ai/LLM"),
+    ("Cybersecurity", "Cybersecurity"),
+    ("IOT", "IOT"),
+    ("DevOps", "DevOps")
+]
+
+
 
 class Project(me.Document):
     meta = {
         "collection": "projects",
-        "indexes": ["name", "status", "stage", "source"],
+        "indexes": ["name", "status", "stage", "source", "Type"],
     }
 
     name = me.StringField(required=True, max_length=255)
@@ -39,6 +48,11 @@ class Project(me.Document):
         required=True,
         default="open",
         choices=[stage[0] for stage in PROJECT_STAGE_CHOICES],
+    )
+    Type = me.StringField(
+        required=True,
+        default="type",
+        choices=[stage[0] for stage in PROJECT_TYPE_CHOICES],
     )
     progress = me.IntField(required=True, default=0, min_value=0, max_value=100)
     deadline = me.DateField()
@@ -63,3 +77,6 @@ class Project(me.Document):
 
     def display_source(self):
         return dict(PROJECT_SOURCE_CHOICES).get(self.source, self.source)
+    
+    def display_type(self):
+        return dict(PROJECT_TYPE_CHOICES).get(self.Type, self.Type)
