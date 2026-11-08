@@ -1,5 +1,5 @@
 VERSION = "0.1.0"
-APP_TITLE = "App Name"
+APP_TITLE = "R202 Tracking Project"
 SECRET_KEY = "changethisonproduction"
 
 MONGODB_DB = "gukgu_db"
