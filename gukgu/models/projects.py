@@ -80,3 +80,16 @@ class Project(me.Document):
     
     def display_type(self):
         return dict(PROJECT_TYPE_CHOICES).get(self.Type, self.Type)
+
+    
+    
+    def days_until_deadline(self):
+        """จำนวนวันที่เหลือก่อนถึง deadline (ติดลบ = เลยกำหนดแล้ว, None = ไม่ได้ตั้ง)"""
+        if not self.deadline:
+            return None
+        return (self.deadline - datetime.date.today()).days
+
+    def is_due_soon(self, days=7):
+        """True ถ้ายังไม่เสร็จ และเหลือเวลาไม่เกิน `days` วัน (รวมถึงเลยกำหนดแล้ว)"""
+        days_left = self.days_until_deadline()
+        return self.stage != "done" and days_left is not None and days_left <= days

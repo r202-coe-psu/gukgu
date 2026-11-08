@@ -2,7 +2,7 @@
 {% set title_page = project.name %}
 
 {% block back_button %}
-<a href="{{ url_for('projects.index') }}" class="btn btn-ghost btn-sm mb-2">
+<a href="{{ url_for('projects.index') }}" class="btn btn-ghost btn-lg mb-2">
   <i class="ph ph-arrow-left"></i> กลับ
 </a>
 {% endblock back_button %}
@@ -18,7 +18,7 @@
     <span class="badge badge-soft">{{ project.display_stage() }}</span>
   </div>
 
-  <p class="whitespace-pre-line">{{ project.description or "-" }}</p>
+  <p class="whitespace-pre-line break-words">{{ project.description or "-" }}</p>
 
   {% if project.deadline %}
   <p class="flex items-center gap-1 text-sm">

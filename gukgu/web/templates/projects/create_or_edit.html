@@ -5,13 +5,13 @@
 {% set back_url = url_for('projects.view', project_id=project.id) if project.id else url_for('projects.index') %}
 
 {% block back_button %}
-<a href="{{ back_url }}" class="btn btn-ghost btn-sm mb-2">
+<a href="{{ back_url }}" class="btn btn-ghost btn-lg mb-2">
   <i class="ph ph-arrow-left"></i> กลับ
 </a>
 {% endblock back_button %}
 
 {% block content %}
-<form method="post" class="card bg-base-0 card-body space-y-2 max-w-2xl">
+<form method="post" class="card bg-base-0 card-body space-y-2 max-w-2xl [&_.fieldset-legend]:text-base [&_.fieldset-legend]:font-semibold">
   {{ form.hidden_tag() }}
 
   {{ renderer.base_render(form.name) }}
