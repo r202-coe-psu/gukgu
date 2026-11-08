@@ -11,7 +11,7 @@ PROJECT_STAGE_CHOICES = [
     ("open", "เปิดรับ"),
     ("in_progress", "กำลังทำ"),
     ("done", "เสร็จ"),
-    ("stay", "พักไว้"),
+    ("wait", "รอตรวจสอบ"),
 ]
 
 PROJECT_SOURCE_CHOICES = [
@@ -56,7 +56,7 @@ class Project(me.Document):
     )
     progress = me.IntField(required=True, default=0, min_value=0, max_value=100)
     deadline = me.DateField()
-    members = me.ListField(me.StringField(max_length=255),required = True)
+    members = me.ListField(me.StringField(max_length=255))
 
     status = me.StringField(
         required=True,

@@ -8,26 +8,26 @@
   <div class="stat">
     <div class="stat-figure text-primary"><i class="ph ph-flask text-3xl"></i></div>
     <div class="stat-title">โปรเจกต์ทั้งหมด</div>
-    <div class="stat-value">24</div>
-    <div class="stat-desc">ปีการศึกษา 2569</div>
+    <div class="stat-value">{{ summary.total_projects | format_number }}</div>
+    <div class="stat-desc">เพิ่มใหม่เดือนนี้ {{ summary.new_projects_this_month | format_number }} โปรเจกต์</div>
   </div>
   <div class="stat">
     <div class="stat-figure text-info"><i class="ph ph-spinner-gap text-3xl"></i></div>
     <div class="stat-title">กำลังดำเนินการ</div>
-    <div class="stat-value">11</div>
-    <div class="stat-desc">3 โปรเจกต์ใกล้ถึงกำหนดส่ง</div>
+    <div class="stat-value">{{ summary.in_progress_projects | format_number }}</div>
+    <div class="stat-desc">{{ summary.due_soon_projects | format_number }} โปรเจกต์ใกล้ถึงกำหนดส่ง (7 วัน)</div>
   </div>
   <div class="stat">
-    <div class="stat-figure text-warning"><i class="ph ph-hourglass-medium text-3xl"></i></div>
+    <div class="stat-figure text-warning"><i class="ph ph-door-open text-3xl"></i></div>
     <div class="stat-title">รอตรวจสอบ</div>
-    <div class="stat-value">4</div>
-    <div class="stat-desc">รอที่ปรึกษาอนุมัติ</div>
+    <div class="stat-value">{{ summary.wait_projects | format_number }}</div>
+    <div class="stat-desc">รอการตรวจสอบ</div>
   </div>
   <div class="stat">
     <div class="stat-figure text-success"><i class="ph ph-check-circle text-3xl"></i></div>
     <div class="stat-title">เสร็จสิ้น</div>
-    <div class="stat-value">9</div>
-    <div class="stat-desc">↗︎ 2 โปรเจกต์เดือนนี้</div>
+    <div class="stat-value">{{ summary.done_projects | format_number }}</div>
+    <div class="stat-desc">↗︎ {{ summary.done_this_month | format_number }} โปรเจกต์เดือนนี้</div>
   </div>
 </div>
 <!--Users dashboard-->
