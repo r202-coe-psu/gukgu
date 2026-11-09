@@ -65,6 +65,9 @@ def create_or_edit(user_id):
     for name in ["username", "first_name", "last_name", "email", "roles"]:
         setattr(user, name, form[name].data)
 
+    # Keep "" instead of None so the optional field passes the model choices check
+    user.year_level = form.year_level.data or ""
+
     if not user_id:
         user.set_password(form.password.data)
         user.creator = current_user._get_current_object()

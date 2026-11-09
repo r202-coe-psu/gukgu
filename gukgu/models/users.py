@@ -9,6 +9,14 @@ USER_ROLES = [
     ("admin", "ผู้ดูแลระบบ"),
 ]
 
+# Study year of a member, optional: "" means not specified
+USER_YEAR_LEVEL_CHOICES = [
+    ("1", "ชั้นปีที่ 1"),
+    ("2", "ชั้นปีที่ 2"),
+    ("3", "ชั้นปีที่ 3"),
+    ("4", "ชั้นปีที่ 4"),
+]
+
 STATUS_CHOICES = [
     ("active", "ใช้งาน"),
     ("inactive", "ไม่ใช้งาน"),
@@ -24,6 +32,11 @@ class User(me.Document, UserMixin):
     username = me.StringField(required=True, min_length=3, max_length=64)
     password = me.StringField(required=True, default="")
     email = me.StringField(max_length=128)
+    # Empty choices entry keeps "not specified" valid for documents created before
+    # this field existed
+    year_level = me.StringField(
+        default="", choices=[""] + [c[0] for c in USER_YEAR_LEVEL_CHOICES]
+    )
 
     status = me.StringField(
         required=True,
@@ -62,6 +75,9 @@ class User(me.Document, UserMixin):
 
     def display_status(self):
         return dict(STATUS_CHOICES).get(self.status, self.status)
+
+    def display_year_level(self):
+        return dict(USER_YEAR_LEVEL_CHOICES).get(self.year_level, "-")
 
     def get_display_roles(self):
         role_dict = dict(USER_ROLES)

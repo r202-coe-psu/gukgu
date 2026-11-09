@@ -2,12 +2,13 @@ from flask_wtf import FlaskForm
 from wtforms import (
     EmailField,
     PasswordField,
+    SelectField,
     SelectMultipleField,
     StringField,
     validators,
 )
 
-from gukgu.models.users import USER_ROLES
+from gukgu.models.users import USER_ROLES, USER_YEAR_LEVEL_CHOICES
 
 
 class BaseUserForm(FlaskForm):
@@ -19,6 +20,11 @@ class BaseUserForm(FlaskForm):
     last_name = StringField("นามสกุล", [validators.Length(max=128)])
     email = EmailField(
         "อีเมล", [validators.Optional(), validators.Email(), validators.Length(max=128)]
+    )
+    year_level = SelectField(
+        "ชั้นปี",
+        choices=[("", "- ไม่ระบุ -")] + USER_YEAR_LEVEL_CHOICES,
+        validators=[validators.Optional()],
     )
 
 

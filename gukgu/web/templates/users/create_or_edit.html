@@ -20,6 +20,7 @@
   {{ renderer.base_render(form.first_name) }}
   {{ renderer.base_render(form.last_name) }}
   {{ renderer.base_render(form.email) }}
+  {{ renderer.base_render(form.year_level) }}
   {{ renderer.render_select_field(form.roles, class_="h-auto") }}
   {% if form.reset_password %}
   {{ renderer.base_render(form.reset_password) }}
