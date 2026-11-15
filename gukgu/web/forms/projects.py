@@ -12,7 +12,7 @@ from wtforms import (
 from gukgu.models import (
     PROJECT_SOURCE_CHOICES,
     PROJECT_STAGE_CHOICES,
-    PROJECT_TYPE_CHOICES,
+    PROJECT_project_type_CHOICES,
 )
 
 
@@ -29,7 +29,7 @@ class ProjectForm(FlaskForm):
         "จาก", [validators.InputRequired()], choices=PROJECT_SOURCE_CHOICES
     )
     project_type = SelectField(
-        "สายงานวิจัย", [validators.InputRequired()], choices=PROJECT_TYPE_CHOICES
+        "สายงานวิจัย", [validators.InputRequired()], choices=PROJECT_project_type_CHOICES
     )
     stage = SelectField(
         "สถานะ", [validators.InputRequired()], choices=PROJECT_STAGE_CHOICES

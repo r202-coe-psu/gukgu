@@ -20,7 +20,7 @@ PROJECT_SOURCE_CHOICES = [
     ("grant", "ทุนวิจัย"),
 ]
 
-PROJECT_TYPE_CHOICES = [
+PROJECT_project_type_CHOICES = [
     ("AI/LLM", "Ai/LLM"),
     ("Cybersecurity", "Cybersecurity"),
     ("IOT", "IOT"),
@@ -31,7 +31,7 @@ PROJECT_TYPE_CHOICES = [
 class Project(me.Document):
     meta = {
         "collection": "projects",
-        "indexes": ["name", "status", "stage", "source", "Type"],
+        "indexes": ["name", "status", "stage", "source", "project_type"],
     }
 
     name = me.StringField(required=True, max_length=255)
@@ -48,10 +48,10 @@ class Project(me.Document):
         default="open",
         choices=[stage[0] for stage in PROJECT_STAGE_CHOICES],
     )
-    Type = me.StringField(
+    project_type = me.StringField(
         required=True,
         default="AI/LLM",
-        choices=[stage[0] for stage in PROJECT_TYPE_CHOICES],
+        choices=[stage[0] for stage in PROJECT_project_type_CHOICES],
     )
     progress = me.IntField(required=True, default=0, min_value=0, max_value=100)
     deadline = me.DateField()
@@ -78,7 +78,7 @@ class Project(me.Document):
         return dict(PROJECT_SOURCE_CHOICES).get(self.source, self.source)
 
     def display_project_type(self):
-        return dict(PROJECT_TYPE_CHOICES).get(self.Type, self.Type)
+        return dict(PROJECT_project_type_CHOICES).get(self.project_type, self.project_type)
 
     def days_until_deadline(self):
         """จำนวนวันที่เหลือก่อนถึง deadline (ติดลบ = เลยกำหนดแล้ว, None = ไม่ได้ตั้ง)"""

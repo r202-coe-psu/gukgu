@@ -8,7 +8,7 @@ from .projects import (
     PROJECT_STATUS_CHOICES,
     PROJECT_STAGE_CHOICES,
     PROJECT_SOURCE_CHOICES,
-    PROJECT_TYPE_CHOICES,
+    PROJECT_project_type_CHOICES,
     Project,
 )
 
@@ -20,7 +20,7 @@ __all__ = [
     "PROJECT_STATUS_CHOICES",
     "PROJECT_STAGE_CHOICES",
     "PROJECT_SOURCE_CHOICES",
-    "PROJECT_TYPE_CHOICES",
+    "PROJECT_project_type_CHOICES",
 ]
 
 db = MongoEngine()
