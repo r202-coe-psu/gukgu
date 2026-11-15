@@ -26,7 +26,7 @@ def get_summary():
         "in_progress_projects": projects.filter(stage="in_progress").count(),
         "wait_projects": projects.filter(stage="wait").count(),
         "due_soon_projects": projects.filter(
-            stage="in_progress",
+            stage__in=["open", "in_progress", "wait"],
             deadline__gte=today,
             deadline__lte=today + datetime.timedelta(days=7),
         ).count(),
