@@ -75,4 +75,5 @@ def test_admin_can_delete_user(admin_client):
     assert response.status_code == 302
     user.reload()
     assert user.status == "inactive"
-
+    assert {"label": "IOT", "count": 2} in summary["type_counts"]
+    

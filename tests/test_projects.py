@@ -1,7 +1,5 @@
 import datetime
 
-import pytest
-
 from gukgu import models
 
 
@@ -65,6 +63,7 @@ def test_admin_can_create(admin_client):
         "/projects/create",
         data={
             "name": "New",
+            "project_type": "IOT",
             "advisor": "ดร.สมหญิง",
             "source": "grant",
             "stage": "in_progress",
@@ -91,6 +90,7 @@ def test_admin_can_edit(admin_client, project):
             "source": "department",
             "stage": "done",
             "members-0": "Chai",
+            "project_type": "IOT",
         },
     )
     assert response.status_code == 302
@@ -109,8 +109,23 @@ def test_user_cannot_get_member_field(user_client):
     assert user_client.get("/projects/member-field").status_code == 403
 
 
+def test_user_cannot_delete(user_client, project):
+    response = user_client.post(f"/projects/{project.id}/delete")
+    assert response.status_code == 403
+    project.reload()
+    assert project.status == "active"
+
+
 def test_admin_can_soft_delete(admin_client, project):
     response = admin_client.post(f"/projects/{project.id}/delete")
     assert response.status_code == 302
     project.reload()
     assert project.status == "inactive"
+
+def test_user_cannot_edit(user_client, project):
+    response = user_client.post(
+        f"/projects/{project.id}/edit", data={"name": "Hacked", "project_type": "IOT"}
+    )
+    assert response.status_code == 403
+    project.reload()
+    assert project.name == "Demo"

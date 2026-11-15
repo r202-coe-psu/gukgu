@@ -17,7 +17,7 @@
   {{ renderer.base_render(form.name) }}
   {{ renderer.base_render(form.advisor) }}
   {{ renderer.base_render(form.source) }}
-  {{ renderer.base_render(form.Type) }}
+  {{ renderer.base_render(form.project_type) }}
   {{ renderer.base_render(form.stage) }}
   {{ renderer.render_text_area_field(form.description) }}
   <fieldset class="fieldset">
@@ -25,7 +25,7 @@
     <div id="member-list" class="space-y-2">
       {% for member in form.members %}
       {% with field_name=member.name, field_value=member.data or "", field_errors=member.errors %}
-      {% include "projects/member_field.html" %}
+      {% include "projects/_member_field.html" %}
       {% endwith %}
       {% endfor %}
     </div>

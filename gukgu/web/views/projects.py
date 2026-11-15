@@ -65,24 +65,6 @@ def index():
     )
 
 
-@module.route("/member-field")
-@roles_required(["admin"])
-def member_field():
-    # HTMX ส่งช่องสมาชิกที่มีอยู่มาด้วย (hx-include) เพื่อหาเลข index ถัดไป
-    indexes = [
-        int(key.rsplit("-", 1)[1])
-        for key in request.args
-        if key.startswith("members-") and key.rsplit("-", 1)[1].isdigit()
-    ]
-    next_index = max(indexes, default=-1) + 1
-    return render_template(
-        "projects/member_field.html",
-        field_name=f"members-{next_index}",
-        field_value="",
-        field_errors=[],
-    )
-
-
 @module.route("/<project_id>")
 @login_required
 def view(project_id):
@@ -131,3 +113,20 @@ def delete(project_id):
 
     flash("ลบโปรเจกต์เรียบร้อยแล้ว", "success")
     return redirect(url_for("projects.index"))
+
+@module.route("/member-field")
+@roles_required(["admin"])
+def member_field():
+    # HTMX ส่งช่องสมาชิกที่มีอยู่มาด้วย (hx-include) เพื่อหาเลข index ถัดไป
+    indexes = [
+        int(key.rsplit("-", 1)[1])
+        for key in request.args
+        if key.startswith("members-") and key.rsplit("-", 1)[1].isdigit()
+    ]
+    next_index = max(indexes, default=-1) + 1
+    return render_template(
+        "projects/_member_field.html",
+        field_name=f"members-{next_index}",
+        field_value="",
+        field_errors=[],
+    )

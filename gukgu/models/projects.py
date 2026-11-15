@@ -24,9 +24,8 @@ PROJECT_TYPE_CHOICES = [
     ("AI/LLM", "Ai/LLM"),
     ("Cybersecurity", "Cybersecurity"),
     ("IOT", "IOT"),
-    ("DevOps", "DevOps")
+    ("DevOps", "DevOps"),
 ]
-
 
 
 class Project(me.Document):
@@ -51,7 +50,7 @@ class Project(me.Document):
     )
     Type = me.StringField(
         required=True,
-        default="type",
+        default="AI/LLM",
         choices=[stage[0] for stage in PROJECT_TYPE_CHOICES],
     )
     progress = me.IntField(required=True, default=0, min_value=0, max_value=100)
@@ -77,12 +76,10 @@ class Project(me.Document):
 
     def display_source(self):
         return dict(PROJECT_SOURCE_CHOICES).get(self.source, self.source)
-    
-    def display_type(self):
+
+    def display_project_type(self):
         return dict(PROJECT_TYPE_CHOICES).get(self.Type, self.Type)
 
-    
-    
     def days_until_deadline(self):
         """จำนวนวันที่เหลือก่อนถึง deadline (ติดลบ = เลยกำหนดแล้ว, None = ไม่ได้ตั้ง)"""
         if not self.deadline:

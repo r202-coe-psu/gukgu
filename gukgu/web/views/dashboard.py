@@ -37,9 +37,8 @@ def get_summary():
         ).count(),
     }
 
+
 @module.route("")
 @login_required
 def index():
     return render_template("dashboard/index.html", summary=get_summary())
-
-    
