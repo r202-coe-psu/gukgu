@@ -1,4 +1,4 @@
-# Staging stack: docker compose -f docker-compose.staging.yml up -d --build
+# Staging stack: docker compose --env-file .env.staging -f docker-compose.staging.yml up -d --build
 # Requires .env.staging (copy from .env.staging.example).
 name: gukgu-staging
 
@@ -37,7 +37,7 @@ services:
       - ./.env.staging:/app/.env:ro
       - /etc/localtime:/etc/localtime:ro
     ports:
-      - 8080:8080
+      - ${WEB_PORT:-8080}:8080
     depends_on:
       - mongodb
       - redis

@@ -20,7 +20,7 @@ pipeline {
                             cd /home/projects/gukgu
                             sudo git -C /home/projects/gukgu checkout develop
                             sudo git -C /home/projects/gukgu pull
-                            docker compose -f docker-compose.staging.yml up -d --build --force-recreate
+                            docker compose --env-file .env.staging -f docker-compose.staging.yml up -d --build --force-recreate
                             '
                         echo "Staging deployment process finished successfully!"
                     '''
