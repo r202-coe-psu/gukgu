@@ -1,0 +1,71 @@
+# Staging stack: docker compose -f docker-compose.staging.yml up -d --build
+# Requires .env.staging (copy from .env.staging.example).
+name: gukgu-staging
+
+services:
+  mongodb:
+    image: mongo:8
+    container_name: gukgu-staging-mongodb
+    env_file:
+      - .env.staging
+    volumes:
+      - ../deployment/gukgu-staging/mongodb/data/db:/data/db
+      - /etc/localtime:/etc/localtime:ro
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  redis:
+    image: redis:7
+    container_name: gukgu-staging-redis
+    volumes:
+      - ../deployment/gukgu-staging/redis/data:/data
+    restart: always
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  web:
+    build: .
+    image: gukgu-staging-image
+    container_name: gukgu-staging-web
+    volumes:
+      - ../deployment/gukgu-staging:/deployment
+      - ./.env.staging:/app/.env:ro
+      - /etc/localtime:/etc/localtime:ro
+    ports:
+      - 8080:8080
+    depends_on:
+      - mongodb
+      - redis
+    restart: always
+    environment:
+      APP_SETTINGS: /app/.env
+    command: gunicorn -w 4 --keep-alive 5 --timeout 120 --bind 0.0.0.0:8080 "gukgu.web:create_app()"
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "6"
+
+  worker:
+    image: gukgu-staging-image
+    container_name: gukgu-staging-worker
+    volumes:
+      - ../deployment/gukgu-staging:/deployment
+      - ./.env.staging:/app/.env:ro
+      - /etc/localtime:/etc/localtime:ro
+    depends_on:
+      - web
+      - mongodb
+      - redis
+    restart: always
+    environment:
+      APP_SETTINGS: /app/.env
+    command: app-worker
+    logging:
+      options:
+        max-size: "10m"
+        max-file: "3"

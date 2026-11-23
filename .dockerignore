@@ -4,3 +4,5 @@
 **/__pycache__
 **/node_modules
 gukgu/web/static/css/app.css
+.env.*
+!.env*.example
