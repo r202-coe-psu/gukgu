@@ -1,0 +1,50 @@
+{% extends "base/default_page.html" %}
+{% import "base/html_renderer.html" as renderer %}
+
+{% set title_page = "แก้ไขโปรเจกต์" if project.id else "เพิ่มโปรเจกต์" %}
+{% set back_url = url_for('projects.view', project_id=project.id) if project.id else url_for('projects.index') %}
+
+{% block back_button %}
+<a href="{{ back_url }}" class="btn btn-ghost btn-lg mb-2">
+  <i class="ph ph-arrow-left"></i> กลับ
+</a>
+{% endblock back_button %}
+
+{% block content %}
+<form method="post" class="card bg-base-0 card-body space-y-2 max-w-2xl [&_.fieldset-legend]:text-base [&_.fieldset-legend]:font-semibold">
+  {{ form.hidden_tag() }}
+
+  {{ renderer.base_render(form.name) }}
+  {{ renderer.base_render(form.advisor) }}
+  {{ renderer.base_render(form.source) }}
+  {{ renderer.base_render(form.project_type) }}
+  {{ renderer.base_render(form.stage) }}
+  {{ renderer.render_text_area_field(form.description) }}
+  <fieldset class="fieldset">
+    <legend class="fieldset-legend">{{ form.members.label.text }}</legend>
+    <div id="member-list" class="space-y-2">
+      {% for member in form.members %}
+      {% with field_name=member.name, field_value=member.data or "", field_errors=member.errors %}
+      {% include "projects/_member_field.html" %}
+      {% endwith %}
+      {% endfor %}
+    </div>
+    <button
+      type="button"
+      class="btn btn-outline btn-sm w-fit mt-2"
+      hx-get="{{ url_for('projects.member_field') }}"
+      hx-include="#member-list input"
+      hx-target="#member-list"
+      hx-swap="beforeend"
+    >
+      <i class="ph ph-plus"></i> เพิ่มสมาชิก
+    </button>
+  </fieldset>
+  {{ renderer.base_render(form.deadline) }}
+
+  <div class="flex justify-end gap-2 pt-4">
+    <a href="{{ back_url }}" class="btn">ยกเลิก</a>
+    <button type="submit" class="btn btn-primary">บันทึก</button>
+  </div>
+</form>
+{% endblock content %}
