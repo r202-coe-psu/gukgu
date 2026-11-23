@@ -18,8 +18,8 @@ pipeline {
                         ssh -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -i "$SSH_KEY" "$SSH_USER"@"$SSH_HOST" -p "$SSH_PORT" '
                             set -e
                             cd /home/projects/gukgu
-                            sudo git -C /home/projects/gukgu checkout develop
-                            sudo git -C /home/projects/gukgu pull
+                            git -C /home/projects/gukgu checkout develop
+                            git -C /home/projects/gukgu pull
                             docker compose --env-file .env.staging -f docker-compose.staging.yml up -d --build --force-recreate
                             '
                         echo "Staging deployment process finished successfully!"
