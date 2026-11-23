@@ -63,12 +63,96 @@
     </dl>
   </div>
 
-  {# Placeholder slots for the upcoming tasks and updates features #}
+  {% set done, total, percent = progress %}
   <div class="card bg-base-0 card-body lg:col-span-2" id="project-tasks">
-    <h2 class="font-semibold">งานย่อย</h2>
-    <p class="text-base-content/60">กำลังพัฒนา</p>
+    <div class="flex items-center justify-between gap-4">
+      <h2 class="font-semibold">งานย่อย</h2>
+      {% if total %}
+      <span class="text-3xl font-bold text-primary">{{ percent }}%</span>
+      {% endif %}
+    </div>
+
+    {% if total %}
+    <div class="space-y-2">
+      <progress class="progress progress-primary w-full" value="{{ percent }}" max="100"></progress>
+      <p class="text-sm text-base-content/60">งานย่อยเสร็จ {{ done }} จาก {{ total }} = {{ percent }}%</p>
+    </div>
+
+    <ul class="list">
+      {% for task in tasks %}
+      {# Done tasks show a filled green check; open tasks show an empty circle #}
+      {% set status_icon = "ph-fill ph-check-circle text-success" if task.is_done else "ph ph-circle text-base-content/40" %}
+      <li class="list-row items-center">
+        {% if can_manage_tasks %}
+        <form method="post" action="{{ url_for('tasks.toggle_done', task_id=task.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          {% set toggle_label = "ยกเลิกสถานะเสร็จ" if task.is_done else "ทำเครื่องหมายว่าเสร็จ" %}
+          <button class="btn btn-ghost btn-square btn-sm text-2xl" title="{{ toggle_label }}"
+            aria-label="{{ toggle_label }}">
+            <i class="{{ status_icon }}"></i>
+          </button>
+        </form>
+        {% else %}
+        <span class="text-2xl" title="{{ 'เสร็จแล้ว' if task.is_done else 'ยังไม่เสร็จ' }}">
+          <i class="{{ status_icon }}"></i>
+        </span>
+        {% endif %}
+
+        <div class="flex-1">
+          <div class="font-medium {{ 'line-through text-base-content/60' if task.is_done else '' }}">{{ task.title }}</div>
+          {% if task.assignee %}
+          <span class="badge badge-ghost mt-2">
+            <i class="ph ph-user"></i> {{ task.assignee.get_fullname() }}
+          </span>
+          {% else %}
+          <span class="text-sm text-base-content/60">ยังไม่มีคนรับผิดชอบ</span>
+          {% endif %}
+        </div>
+
+        {% if can_manage_tasks %}
+        <div class="flex">
+          <a href="{{ url_for('tasks.create_or_edit', task_id=task.id) }}" class="btn btn-sm btn-ghost btn-square"
+            title="แก้ไข" aria-label="แก้ไขงานย่อย">
+            <i class="ph ph-pencil-simple"></i>
+          </a>
+          <form method="post" action="{{ url_for('tasks.delete', task_id=task.id) }}"
+            onsubmit="return confirm('ยืนยันการลบงานย่อยนี้?')">
+            <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+            <button class="btn btn-sm btn-ghost btn-square text-error" title="ลบ" aria-label="ลบงานย่อย">
+              <i class="ph ph-trash"></i>
+            </button>
+          </form>
+        </div>
+        {% endif %}
+      </li>
+      {% endfor %}
+    </ul>
+    {% else %}
+    <div class="bg-base-200 rounded-box text-center py-8 text-base-content/60">
+      <i class="ph ph-list-checks text-4xl text-base-content/40"></i>
+      <p class="mt-2">ยังไม่มีงานย่อย</p>
+    </div>
+    {% endif %}
+
+    {% if can_manage_tasks %}
+    {# Compact add row; validation errors are shown on the full task form page #}
+    <form method="post" action="{{ url_for('tasks.create_or_edit', project_id=project.id) }}"
+      class="flex flex-col md:flex-row gap-2 bg-base-200 rounded-box p-4 mt-2">
+      {{ task_form.hidden_tag() }}
+      <div class="flex-1">
+        {{ task_form.title(class_="input w-full", placeholder="ชื่องานย่อยใหม่", **{"aria-label": "ชื่องานย่อย"}) }}
+      </div>
+      <div class="flex-1">
+        {{ task_form.assignee(class_="select w-full", **{"aria-label": "คนรับผิดชอบ"}) }}
+      </div>
+      <button type="submit" class="btn btn-primary">
+        <i class="ph ph-plus"></i> เพิ่มงานย่อย
+      </button>
+    </form>
+    {% endif %}
   </div>
 
+  {# Placeholder slot for the upcoming updates feature #}
   <div class="card bg-base-0 card-body" id="project-updates">
     <h2 class="font-semibold">ไทม์ไลน์อัปเดต</h2>
     <p class="text-base-content/60">กำลังพัฒนา</p>

@@ -127,3 +127,50 @@ def test_index_filters_by_stage_and_search(user_client, admin):
     html = user_client.get("/projects?stage=unknown").get_data(as_text=True)
     assert "Alpha" in html
     assert "Beta" in html
+
+
+def test_admin_can_set_members(admin_client, admin):
+    alice = models.User(username="alice", roles=["user"]).save()
+    bob = models.User(username="bob", roles=["user"]).save()
+    response = admin_client.post(
+        "/projects/create",
+        data={"name": "Team", "members": [str(alice.id), str(bob.id)]},
+    )
+    assert response.status_code == 302
+    project = models.Project.objects.get(name="Team")
+    assert {m.username for m in project.members} == {"alice", "bob"}
+
+    # Editing replaces the member list
+    admin_client.post(
+        f"/projects/{project.id}/edit",
+        data={"name": "Team", "members": [str(bob.id)]},
+    )
+    project.reload()
+    assert [m.username for m in project.members] == ["bob"]
+
+
+def test_edit_form_shows_current_members(admin_client, admin):
+    alice = models.User(username="alice", roles=["user"]).save()
+    project = models.Project(name="Team", members=[alice], creator=admin).save()
+    html = admin_client.get(f"/projects/{project.id}/edit").get_data(as_text=True)
+    assert f'selected value="{alice.id}"' in html
+
+
+def test_members_must_be_active_users(admin_client):
+    retired = models.User(username="retired", roles=["user"], status="inactive").save()
+    response = admin_client.post(
+        "/projects/create", data={"name": "Team", "members": [str(retired.id)]}
+    )
+    assert response.status_code == 200
+    assert models.Project.objects.count() == 0
+    assert "retired" not in admin_client.get("/projects/create").get_data(as_text=True)
+
+
+def test_user_cannot_set_members(user_client, project, admin):
+    response = user_client.post(
+        f"/projects/{project.id}/edit",
+        data={"name": "Demo", "members": [str(admin.id)]},
+    )
+    assert response.status_code == 403
+    project.reload()
+    assert project.members == []

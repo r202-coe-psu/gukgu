@@ -1,11 +1,52 @@
 {% extends "base/default_page.html" %}
+{% import "components/paginations.html" as paginations %}
 
-{% set title_page = "งานย่อย" %}
+{% set title_page = "งานของฉัน" %}
+{% set description_page = "งานย่อยที่คุณเป็นคนรับผิดชอบ" %}
 
 {% block content %}
-<div class="card bg-base-0 card-body items-center text-center py-16">
-  <i class="ph ph-hammer text-4xl text-base-content/40"></i>
-  <h2 class="font-semibold mt-2">งานย่อยของโปรเจกต์</h2>
-  <p class="text-base-content/60">กำลังพัฒนา</p>
+<div class="card bg-base-0 card-body">
+  <div id="my-tasks" class="space-y-3">
+    {# Items are sorted open-first, so grouping keeps "not done" above "done" #}
+    {% for is_done, group in tasks_pagination.items | groupby("is_done") %}
+    <section class="{{ 'pt-4' if not loop.first else '' }}">
+      <h2 class="font-semibold mb-2">
+        {% if is_done %}
+        <i class="ph-fill ph-check-circle text-success"></i> เสร็จแล้ว
+        <span class="badge badge-ghost">{{ done_count }}</span>
+        {% else %}
+        <i class="ph ph-circle text-base-content/40"></i> ยังไม่เสร็จ
+        <span class="badge badge-ghost">{{ open_count }}</span>
+        {% endif %}
+      </h2>
+
+      <ul class="list bg-base-200 rounded-box">
+        {% for task in group %}
+        {% set project = projects_by_id[task.project.id] %}
+        <li class="list-row items-center">
+          <div class="flex-1">
+            <div class="font-medium {{ 'line-through text-base-content/60' if task.is_done else '' }}">{{ task.title }}</div>
+            <a href="{{ url_for('projects.view', project_id=project.id, _anchor='project-tasks') }}"
+              class="text-sm text-primary">
+              <i class="ph ph-flask"></i> {{ project.name }}
+            </a>
+          </div>
+          <a href="{{ url_for('projects.view', project_id=project.id, _anchor='project-tasks') }}"
+            class="btn btn-sm btn-ghost btn-square" title="ไปที่โปรเจกต์" aria-label="ไปที่โปรเจกต์">
+            <i class="ph ph-caret-right"></i>
+          </a>
+        </li>
+        {% endfor %}
+      </ul>
+    </section>
+    {% else %}
+    <div class="text-center py-16 text-base-content/60">
+      <i class="ph ph-check-square text-4xl text-base-content/40"></i>
+      <p class="mt-2">ยังไม่มีงานที่ได้รับมอบหมาย</p>
+    </div>
+    {% endfor %}
+  </div>
+
+  {{ paginations.render_pagination(tasks_pagination, 'tasks.index') }}
 </div>
 {% endblock content %}

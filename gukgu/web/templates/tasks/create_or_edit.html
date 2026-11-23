@@ -1,0 +1,27 @@
+{% extends "base/default_page.html" %}
+{% import "base/html_renderer.html" as renderer %}
+
+{% set title_page = "แก้ไขงานย่อย" if task.id else "เพิ่มงานย่อย" %}
+{% set description_page = "โปรเจกต์: " ~ project.name %}
+{% set back_url = url_for('projects.view', project_id=project.id, _anchor='project-tasks') %}
+
+{% block back_button %}
+<a href="{{ back_url }}" class="btn btn-ghost btn-sm mb-2">
+  <i class="ph ph-arrow-left"></i> กลับ
+</a>
+{% endblock back_button %}
+
+{% block content %}
+{% set action_url = url_for('tasks.create_or_edit', task_id=task.id) if task.id else url_for('tasks.create_or_edit', project_id=project.id) %}
+<form method="post" action="{{ action_url }}" class="card bg-base-0 card-body space-y-2 max-w-2xl">
+  {{ form.hidden_tag() }}
+
+  {{ renderer.base_render(form.title) }}
+  {{ renderer.base_render(form.assignee) }}
+
+  <div class="flex justify-end gap-2 pt-4">
+    <a href="{{ back_url }}" class="btn">ยกเลิก</a>
+    <button type="submit" class="btn btn-primary">บันทึก</button>
+  </div>
+</form>
+{% endblock content %}

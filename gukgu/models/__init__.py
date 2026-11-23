@@ -10,6 +10,7 @@ from .projects import (
     PROJECT_STAGE_CHOICES,
     PROJECT_SOURCE_CHOICES,
 )
+from .tasks import Task, TASK_STATUS_CHOICES
 
 __all__ = [
     "User",
@@ -19,6 +20,8 @@ __all__ = [
     "PROJECT_STATUS_CHOICES",
     "PROJECT_STAGE_CHOICES",
     "PROJECT_SOURCE_CHOICES",
+    "Task",
+    "TASK_STATUS_CHOICES",
 ]
 
 db = MongoEngine()

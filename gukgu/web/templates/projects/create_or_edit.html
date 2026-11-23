@@ -19,6 +19,7 @@
   {{ renderer.base_render(form.stage) }}
   {{ renderer.render_text_area_field(form.description) }}
   {{ renderer.base_render(form.deadline) }}
+  {{ renderer.render_select_field(form.members, class_="h-auto") }}
 
   <div class="flex justify-end gap-2 pt-4">
     <a href="{{ back_url }}" class="btn">ยกเลิก</a>

@@ -1,5 +1,12 @@
 from flask_wtf import FlaskForm
-from wtforms import DateField, SelectField, StringField, TextAreaField, validators
+from wtforms import (
+    DateField,
+    SelectField,
+    SelectMultipleField,
+    StringField,
+    TextAreaField,
+    validators,
+)
 
 from gukgu.models.projects import PROJECT_SOURCE_CHOICES, PROJECT_STAGE_CHOICES
 
@@ -13,6 +20,13 @@ class ProjectForm(FlaskForm):
     stage = SelectField("ขั้นของงาน", choices=PROJECT_STAGE_CHOICES)
     description = TextAreaField("รายละเอียด", [validators.Optional()])
     deadline = DateField("กำหนดส่ง", [validators.Optional()])
+    # Choices (active users only) are set in the view; any other id is rejected
+    members = SelectMultipleField(
+        "สมาชิกโปรเจกต์", choices=[], validators=[validators.Optional()]
+    )
+
+    def set_member_choices(self, users):
+        self.members.choices = [(str(user.id), user.get_fullname()) for user in users]
 
 
 class SearchProjectForm(FlaskForm):

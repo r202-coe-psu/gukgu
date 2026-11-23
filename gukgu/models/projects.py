@@ -47,6 +47,13 @@ class Project(me.Document):
     updated_date = me.DateTimeField(required=True, default=datetime.datetime.now)
     updater = me.ReferenceField("User", dbref=True)
 
+    def has_member(self, user):
+        # Compare ids so a reference to a since-removed user cannot break the check
+        user_id = getattr(user, "id", None)
+        if user_id is None:
+            return False
+        return any(getattr(member, "id", None) == user_id for member in self.members)
+
     def display_status(self):
         return dict(PROJECT_STATUS_CHOICES).get(self.status, self.status)
 
